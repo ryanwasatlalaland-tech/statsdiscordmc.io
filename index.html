@@ -21,6 +21,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
+  <script>
+    try {
+      const saved = localStorage.getItem("discord-stats-theme");
+      const theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch {}
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
   <script src="./config.js" defer></script>
   <script src="./app.js" defer></script>
@@ -28,18 +36,27 @@
 <body>
 <div class="shell">
   <aside>
-    <a class="brand" href="#overview"><span>↗</span><strong>Minecraft Discord Stats</strong></a>
+    <a class="brand" href="#overview">
+      <img class="brand-logo" src="./assets/favicon.svg" alt="">
+      <span class="brand-copy"><strong>MINECRAFT</strong><small>Discord Server Tracker</small></span>
+    </a>
     <nav aria-label="Primary navigation">
-      <a class="active" href="#overview">Overview</a>
-      <a href="#members">Members</a>
-      <a href="#online">Online</a>
-      <a href="#activity">Activity</a>
-      <a href="#history">History</a>
-      <a href="#diagnostics">Diagnostics</a>
+      <a class="active" href="#overview"><span>▣</span>Overview</a>
+      <a href="#members"><span>↗</span>Growth</a>
+      <a href="#online"><span>●</span>Online</a>
+      <a href="#activity"><span>ϟ</span>Activity</a>
+      <a href="#history"><span>▤</span>History</a>
+      <a href="#diagnostics"><span>ⓘ</span>Diagnostics</a>
     </nav>
-    <div class="status-card">
-      <i class="pulse" id="statusDot"></i>
-      <div><strong id="trackerStatus">Connecting</strong><small id="statusSmall">Cloudflare Worker</small></div>
+    <div class="sidebar-bottom">
+      <div class="status-card">
+        <i class="pulse" id="statusDot"></i>
+        <div><strong id="trackerStatus">Connecting</strong><small id="statusSmall">Cloudflare Worker</small></div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle colour theme" aria-pressed="true">
+        <span>Dark mode</span>
+        <i><b></b></i>
+      </button>
     </div>
   </aside>
 
@@ -47,8 +64,8 @@
     <header class="page-actions">
       <div>
         <p class="eyebrow">Live invite analytics</p>
-        <h1>Discord server analytics</h1>
-        <p>Historical member and activity tracking updated every five minutes.</p>
+        <h1>Minecraft Discord analytics</h1>
+        <p>Members, online presence, message activity and historical growth.</p>
       </div>
       <div class="header-actions">
         <button class="secondary" id="refreshButton" type="button">Refresh</button>
@@ -105,15 +122,15 @@
     </section>
 
     <section class="stats" aria-label="Server statistics">
-      <article class="accent"><span>Current members</span><strong id="totalMembers">—</strong><small id="memberTimestamp">latest approximate count</small></article>
-      <article><span>Current online</span><strong id="onlineMembers">—</strong><small id="onlineRate">—</small></article>
-      <article><span>Change in 1 hour</span><strong id="change1h">—</strong><small>compared with nearest reading</small></article>
-      <article><span>Change in 24 hours</span><strong id="change24h">—</strong><small>compared with nearest reading</small></article>
-      <article><span>Change all time</span><strong id="changeAllTime">—</strong><small id="changeAllTimeNote">from first to latest collected data</small></article>
-      <article><span>Average per hour</span><strong id="averageHour">—</strong><small>during selected period</small></article>
-      <article><span>24-hour peak online</span><strong id="peakOnline">—</strong><small id="peakTime">—</small></article>
-      <article><span>24-hour lowest online</span><strong id="lowOnline">—</strong><small id="lowTime">—</small></article>
-      <article><span>Stored data points</span><strong id="dataPoints">—</strong><small id="coverageText">historical snapshots</small></article>
+      <article class="accent"><span><i class="stat-icon">♟</i>Current members</span><strong id="totalMembers">—</strong><small id="memberTimestamp">latest approximate count</small></article>
+      <article><span><i class="stat-icon">●</i>Current online</span><strong id="onlineMembers">—</strong><small id="onlineRate">—</small></article>
+      <article><span><i class="stat-icon">↗</i>Change in 1 hour</span><strong id="change1h">—</strong><small>compared with nearest reading</small></article>
+      <article><span><i class="stat-icon">↗</i>Change in 24 hours</span><strong id="change24h">—</strong><small>compared with nearest reading</small></article>
+      <article><span><i class="stat-icon">⌁</i>Change all time</span><strong id="changeAllTime">—</strong><small id="changeAllTimeNote">from first to latest collected data</small></article>
+      <article><span><i class="stat-icon">∿</i>Average per hour</span><strong id="averageHour">—</strong><small>during selected period</small></article>
+      <article><span><i class="stat-icon">▲</i>24-hour peak online</span><strong id="peakOnline">—</strong><small id="peakTime">—</small></article>
+      <article><span><i class="stat-icon">▼</i>24-hour lowest online</span><strong id="lowOnline">—</strong><small id="lowTime">—</small></article>
+      <article><span><i class="stat-icon">▦</i>Stored data points</span><strong id="dataPoints">—</strong><small id="coverageText">historical snapshots</small></article>
     </section>
 
     <section class="panel" id="members">
@@ -155,7 +172,9 @@
       <div class="table-wrap"><table><thead><tr><th>Checked</th><th>Total members</th><th>Online</th><th>Online share</th><th>Change</th></tr></thead><tbody id="recent"><tr><td class="empty" colspan="5">Loading snapshots…</td></tr></tbody></table></div>
     </section>
 
-    <footer>Powered by Cloudflare · Made by RyanFol</footer>
+    <footer>Approximate statistics from a Discord invite · Updated every five minutes · Made by RyanFol</footer>
   </main>
-
+</div>
+</body>
+</html>
 
