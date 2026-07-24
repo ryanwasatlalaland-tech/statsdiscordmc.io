@@ -3,9 +3,13 @@ import path from "node:path";
 
 const inviteInput = process.env.DISCORD_INVITE?.trim();
 if (!inviteInput) throw new Error("DISCORD_INVITE is missing. Add it as a GitHub Actions repository variable.");
-console.log(`Raw DISCORD_INVITE: ${inviteInput}`);
 
-const inviteCode = inviteInput.replace(/^https?:\/\/(www\.)?(discord\.gg|discord(app)?\.com\/invite)\//i, "").split(/[/?#]/)[0];
+// Remove "Value: " prefix if present (GitHub Actions quirk)
+const cleanedInput = inviteInput.replace(/^Value:\s*/, "").trim();
+console.log(`Raw DISCORD_INVITE: ${inviteInput}`);
+console.log(`Cleaned DISCORD_INVITE: ${cleanedInput}`);
+
+const inviteCode = cleanedInput.replace(/^https?:\/\/(www\.)?(discord\.gg|discord(app)?\.com\/invite)\//i, "").split(/[/?#]/)[0];
 console.log(`Extracted invite code: ${inviteCode}`);
 
 if (!inviteCode) throw new Error("Could not extract an invite code from DISCORD_INVITE.");
