@@ -422,3 +422,66 @@ footer{
 @media(max-width:420px){
   .stats,.activity-stats{grid-template-columns:1fr}
 }
+
+
+/* Final sidebar brand alignment fix */
+.brand{
+  min-width:0;
+  overflow:hidden;
+}
+
+.brand-logo{
+  flex:0 0 42px;
+}
+
+.brand-copy{
+  min-width:0;
+  overflow:hidden;
+}
+
+.brand-copy strong,
+.brand-copy small{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Collapsed tablet sidebar: show only the icon cleanly */
+@media (min-width:651px) and (max-width:900px){
+  .brand{
+    justify-content:center !important;
+    padding:4px 0 !important;
+  }
+
+  .brand-copy{
+    display:none !important;
+  }
+
+  .brand-logo{
+    width:42px !important;
+    height:42px !important;
+    flex-basis:42px !important;
+  }
+}
+
+/* Mobile top bar: restore the full brand without overlap */
+@media (max-width:650px){
+  .brand{
+    justify-content:flex-start !important;
+    overflow:visible !important;
+  }
+
+  .brand-copy{
+    display:grid !important;
+    min-width:0 !important;
+  }
+
+  .brand-copy strong{
+    display:block !important;
+  }
+
+  .brand-copy small{
+    display:block !important;
+  }
+}
