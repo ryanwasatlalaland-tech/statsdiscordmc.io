@@ -37,6 +37,7 @@
 <div class="shell">
   <aside>
     <a class="brand" href="#overview">
+      <img class="brand-logo" src="./assets/favicon.svg" alt="">
     </a>
     <nav aria-label="Primary navigation">
       <a class="active" href="#overview"><span>▣</span>Overview</a>
@@ -175,3 +176,4 @@
 </div>
 </body>
 </html>
+
