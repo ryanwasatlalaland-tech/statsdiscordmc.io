@@ -311,6 +311,51 @@ function renderHeatmap(history) {
   byId("heatmap").innerHTML = html;
 }
 
+
+function renderServerBadges(server) {
+  const container = byId("serverBadges");
+  if (!container) return;
+
+  const features = new Set(
+    [
+      ...(Array.isArray(server?.features) ? server.features : []),
+      ...(Array.isArray(server?.profileFeatures) ? server.profileFeatures : [])
+    ].map(value => String(value).toUpperCase())
+  );
+
+  const isCommunity = Boolean(server?.community) || features.has("COMMUNITY");
+  const isVerified = Boolean(server?.verified) || features.has("VERIFIED");
+
+  const badges = [];
+
+  if (isVerified) {
+    badges.push(`
+      <span class="discord-server-badge verified-badge" title="Discord Verified Server">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.2l2.25 1.52 2.7-.2 1.02 2.5 2.34 1.36-.58 2.65 1.35 2.34-1.82 2-.2 2.7-2.55.87-1.52 2.25-2.62-.72-2.34 1.35-2-1.82-2.7-.2-.87-2.55-2.25-1.52.72-2.62-1.35-2.34 1.82-2 .2-2.7 2.55-.87L9.38 2.2 12 2.92 12 2.2z"></path>
+          <path class="badge-check" d="M8.25 12.15l2.1 2.1 5.4-5.4"></path>
+        </svg>
+        <span>Verified</span>
+      </span>
+    `);
+  }
+
+  if (isCommunity) {
+    badges.push(`
+      <span class="discord-server-badge community-badge" title="Discord Community Server">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8.15 11.1a3.05 3.05 0 1 0 0-6.1 3.05 3.05 0 0 0 0 6.1zm7.7 0a3.05 3.05 0 1 0 0-6.1 3.05 3.05 0 0 0 0 6.1zM2.8 18.9c0-3.25 2.4-5.4 5.35-5.4 1.18 0 2.25.34 3.1.94-1.16 1.15-1.85 2.75-1.85 4.46H2.8zm18.4 0h-6.6c0-1.71-.69-3.31-1.85-4.46.85-.6 1.92-.94 3.1-.94 2.95 0 5.35 2.15 5.35 5.4z"></path>
+          <path d="M12 12.65a3.35 3.35 0 1 0 0-6.7 3.35 3.35 0 0 0 0 6.7zm-5.15 7.1c0-3.2 2.3-5.45 5.15-5.45s5.15 2.25 5.15 5.45H6.85z"></path>
+        </svg>
+        <span>Community</span>
+      </span>
+    `);
+  }
+
+  container.innerHTML = badges.join("");
+  container.classList.toggle("hidden", badges.length === 0);
+}
+
 function render(payload) {
   fullPayload = payload;
   const allHistory = Array.isArray(payload.history) ? payload.history.slice().sort((a,b)=>new Date(a.time)-new Date(b.time)) : [];
@@ -336,6 +381,7 @@ function render(payload) {
   const fallback = byId("serverIconFallback");
   const serverName = server.name || "Discord server";
   byId("heroServerName").textContent = serverName;
+  renderServerBadges(server);
   fallback.textContent = serverName.trim().charAt(0).toUpperCase() || "D";
 
   const showFallback = () => {
@@ -573,3 +619,4 @@ document.addEventListener("click",event=>{
 load();
 setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
 setInterval(load, 60_000);
+
