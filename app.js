@@ -36,7 +36,7 @@ function render(payload) {
   byId("channelName").textContent = payload.server?.channel ? `#${payload.server.channel}` : "Not provided";
   byId("lastChecked").textContent = new Date(latest.time).toLocaleString();
   byId("serverMeta").textContent = `Watching ${payload.server?.name || "a Discord server"} through discord.gg/${payload.server?.inviteCode || "invite"}`;
-  byId("trackerStatus").textContent = "Data connected";
+  byId("trackerStatus").textContent = "Data-connected";
   byId("statusSmall").textContent = `Updated ${new Date(latest.time).toLocaleTimeString()}`;
   byId("statusDot").classList.remove("offline");
 
