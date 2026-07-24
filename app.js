@@ -38,8 +38,21 @@ function ensureMessageActivityPanel() {
 function renderMessageActivity(payload) {
   ensureMessageActivityPanel();
   const activity = payload.messageActivity || payload.activity || {};
-  const bins = Array.isArray(activity.bins) ? activity.bins.map(Number).filter(Number.isFinite) : [];
-  const updatedAt = activity.lastUpdated || activity.updatedAt || null;
+  const rawLiveliness = payload.liveliness || payload.invite?.liveliness || {};
+
+  const sourceBins =
+    Array.isArray(activity.bins) ? activity.bins :
+    Array.isArray(activity.msg_activity_bins) ? activity.msg_activity_bins :
+    Array.isArray(rawLiveliness.msg_activity_bins) ? rawLiveliness.msg_activity_bins :
+    [];
+
+  const bins = sourceBins.map(Number).filter(Number.isFinite);
+  const updatedAt =
+    activity.lastUpdated ||
+    activity.updatedAt ||
+    activity.last_updated_ts ||
+    rawLiveliness.last_updated_ts ||
+    null;
   const current = Number.isFinite(Number(activity.current)) ? Number(activity.current) : bins.at(-1);
   const average = Number.isFinite(Number(activity.average)) ? Number(activity.average) : (bins.length ? bins.reduce((a,b)=>a+b,0)/bins.length : null);
   const peak = Number.isFinite(Number(activity.peak)) ? Number(activity.peak) : (bins.length ? Math.max(...bins) : null);
@@ -56,6 +69,9 @@ function renderMessageActivity(payload) {
     x: end - (bins.length - 1 - index) * 60 * 60 * 1000,
     y: value
   }));
+
+  const canvas = byId("messageActivityChart");
+  canvas.parentElement.classList.toggle("activity-empty", bins.length === 0);
 
   makeChart("messageActivityChart", {
     type:"line",
@@ -82,8 +98,22 @@ function renderMessageActivity(payload) {
         }}
       },
       scales:{
-        x:{type:"linear",grid:{display:false},ticks:{maxTicksLimit:8,callback:value=>new Date(value).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit"})}},
-        y:{suggestedMin:0,suggestedMax:100,ticks:{precision:0},grid:{color:"#222c26"}}
+        x:{
+          type:"linear",
+          display:bins.length > 0,
+          grid:{display:false},
+          ticks:{
+            maxTicksLimit:8,
+            callback:value=>new Date(value).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit"})
+          }
+        },
+        y:{
+          display:bins.length > 0,
+          suggestedMin:0,
+          suggestedMax:100,
+          ticks:{precision:0},
+          grid:{color:"#222c26"}
+        }
       }
     }
   });
@@ -617,4 +647,3 @@ document.addEventListener("click",event=>{
 load();
 setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
 setInterval(load, 60_000);
-
