@@ -108,21 +108,69 @@ function filterHistory(history, range = selectedRange) {
   return history.filter(point => new Date(point.time).getTime() >= cutoff);
 }
 
-function nearestAtOrBefore(history, timestamp) {
-  let best = null;
+function median(values) {
+  const sorted = values.map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function memberMedianNear(history, timestamp, radius = 20 * 60 * 1000) {
+  const values = history
+    .filter(point => Math.abs(new Date(point.time).getTime() - timestamp) <= radius)
+    .map(point => point.members);
+
+  return median(values);
+}
+
+function closestReading(history, timestamp, maxDistance = 45 * 60 * 1000) {
+  let closest = null;
+  let closestDistance = Infinity;
+
   for (const point of history) {
     const time = new Date(point.time).getTime();
-    if (time <= timestamp) best = point;
-    else break;
+    if (!Number.isFinite(time)) continue;
+
+    const distance = Math.abs(time - timestamp);
+    if (distance < closestDistance) {
+      closest = point;
+      closestDistance = distance;
+    }
   }
-  return best;
+
+  return closestDistance <= maxDistance ? closest : null;
 }
 
 function changeSince(history, duration) {
-  const latest = history.at(-1);
-  if (!latest) return 0;
-  const earlier = nearestAtOrBefore(history, new Date(latest.time).getTime() - duration) || history[0];
-  return Number(latest.members) - Number(earlier.members);
+  const ordered = [...history]
+    .filter(point => Number.isFinite(new Date(point.time).getTime()) && Number.isFinite(Number(point.members)))
+    .sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  const latest = ordered.at(-1);
+  if (!latest) return null;
+
+  const latestTime = new Date(latest.time).getTime();
+  const targetTime = latestTime - duration;
+  const baseline = closestReading(ordered, targetTime);
+
+  // Do not silently compare against the oldest reading when the proper
+  // 24-hour baseline is missing. That was the cause of incorrect swings.
+  if (!baseline) return null;
+
+  // Discord invite member totals are approximate and can jump between
+  // requests. Use local medians around both endpoints to reduce noise.
+  const currentMembers =
+    memberMedianNear(ordered, latestTime, 20 * 60 * 1000) ??
+    Number(latest.members);
+
+  const baselineTime = new Date(baseline.time).getTime();
+  const baselineMembers =
+    memberMedianNear(ordered, baselineTime, 20 * 60 * 1000) ??
+    Number(baseline.members);
+
+  return Math.round(currentMembers - baselineMembers);
 }
 
 function ageLabel(ms) {
@@ -288,8 +336,19 @@ function render(payload) {
   inviteButton.classList.toggle("hidden", inviteUrl === "#");
   byId("onlineMembers").textContent = fmt(latest.online);
   byId("onlineRate").textContent = `${onlineRate.toFixed(2)}% of members`;
-  byId("change1h").textContent = signed(changeSince(allHistory, 3600000));
-  byId("change24h").textContent = signed(changeSince(allHistory, 86400000));
+  const change1h = changeSince(allHistory, 3600000);
+  const change24h = changeSince(allHistory, 86400000);
+
+  byId("change1h").textContent = change1h == null ? "—" : signed(change1h);
+  byId("change24h").textContent = change24h == null ? "—" : signed(change24h);
+
+  const change24Card = byId("change24h")?.closest("article, .card, .stat-card");
+  const change24Note = change24Card?.querySelector("small");
+  if (change24Note) {
+    change24Note.textContent = change24h == null
+      ? "not enough data near 24 hours ago"
+      : "smoothed against readings near 24 hours ago";
+  }
   byId("averageHour").textContent = `${averagePerHour > 0 ? "+" : ""}${averagePerHour.toFixed(1)}`;
   byId("peakOnline").textContent = fmt(peak.online);
   byId("peakTime").textContent = new Date(peak.time).toLocaleString();
@@ -414,3 +473,4 @@ document.addEventListener("click",event=>{
 load();
 setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
 setInterval(load, 60_000);
+
