@@ -173,6 +173,38 @@ function changeSince(history, duration) {
   return Math.round(currentMembers - baselineMembers);
 }
 
+function allTimeChange(history) {
+  const ordered = [...history]
+    .filter(point =>
+      Number.isFinite(new Date(point.time).getTime()) &&
+      Number.isFinite(Number(point.members))
+    )
+    .sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  if (ordered.length < 2) return null;
+
+  const firstTime = new Date(ordered[0].time).getTime();
+  const lastTime = new Date(ordered.at(-1).time).getTime();
+
+  // Use medians near the beginning and end of the complete dataset so one
+  // approximate Discord invite reading cannot distort the all-time result.
+  const startingMembers =
+    memberMedianNear(ordered, firstTime, 30 * 60 * 1000) ??
+    Number(ordered[0].members);
+
+  const currentMembers =
+    memberMedianNear(ordered, lastTime, 30 * 60 * 1000) ??
+    Number(ordered.at(-1).members);
+
+  return {
+    change: Math.round(currentMembers - startingMembers),
+    startingMembers: Math.round(startingMembers),
+    currentMembers: Math.round(currentMembers),
+    firstTime,
+    lastTime
+  };
+}
+
 function ageLabel(ms) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
   if (seconds < 60) return `${seconds}s ago`;
@@ -338,9 +370,18 @@ function render(payload) {
   byId("onlineRate").textContent = `${onlineRate.toFixed(2)}% of members`;
   const change1h = changeSince(allHistory, 3600000);
   const change24h = changeSince(allHistory, 86400000);
+  const lifetime = allTimeChange(allHistory);
 
   byId("change1h").textContent = change1h == null ? "—" : signed(change1h);
   byId("change24h").textContent = change24h == null ? "—" : signed(change24h);
+  byId("changeAllTime").textContent = lifetime == null ? "—" : signed(lifetime.change);
+
+  const allTimeNote = byId("changeAllTimeNote");
+  if (allTimeNote) {
+    allTimeNote.textContent = lifetime == null
+      ? "not enough collected data"
+      : `since ${new Date(lifetime.firstTime).toLocaleDateString()} · ${fmt(lifetime.startingMembers)} → ${fmt(lifetime.currentMembers)}`;
+  }
 
   const change24Card = byId("change24h")?.closest("article, .card, .stat-card");
   const change24Note = change24Card?.querySelector("small");
@@ -373,104 +414,4 @@ function render(payload) {
   setStatus(latest.time);
 
   makeChart("memberChart", {
-    type:"line",
-    data:{datasets:[{label:"Members",data:chartData(history,"members"),borderColor:"#9cc8a5",backgroundColor:"rgba(92,151,105,.14)",fill:true,tension:.22,spanGaps:false,pointRadius:history.length > 70 ? 0 : 2,pointHoverRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Members")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:"#222c26"}}}}
-  });
-
-  makeChart("onlineTrendChart", {
-    type:"line",
-    data:{datasets:[{label:"Online",data:chartData(history,"online"),borderColor:"#74a982",backgroundColor:"rgba(74,126,88,.12)",fill:true,tension:.22,spanGaps:false,pointRadius:history.length > 70 ? 0 : 2,pointHoverRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Online")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:"#222c26"}}}}
-  });
-
-  makeChart("onlineShareChart", {type:"doughnut",data:{labels:["Online","Offline"],datasets:[{data:[latest.online,Math.max(0,latest.members-latest.online)],backgroundColor:["#8fbd99","#28332d"],borderWidth:4,borderColor:"#131916"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"68%",plugins:{legend:{position:"bottom",labels:{boxWidth:8,usePointStyle:true,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)} (${(ctx.raw/latest.members*100).toFixed(2)}%)`}}}}});
-
-  const hours = Array.from({length:24},(_,hour)=>({hour,change:0}));
-  for (let i=1;i<history.length;i++) hours[new Date(history[i].time).getHours()].change += Number(history[i].members)-Number(history[i-1].members);
-  makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae"),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Net change: ${signed(ctx.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#222c26"}}}}});
-
-  renderMessageActivity(payload);
-  renderHeatmap(allHistory);
-
-  const recent = [...history].reverse().slice(0,50);
-  byId("recent").innerHTML = recent.map((row,index) => {
-    const originalIndex = allHistory.indexOf(row);
-    const previous = originalIndex > 0 ? allHistory[originalIndex - 1] : null;
-    const change = previous ? Number(row.members)-Number(previous.members) : Number(row.change || 0);
-    const share = row.members ? Number(row.online)/Number(row.members)*100 : 0;
-    return `<tr><td>${escapeHtml(new Date(row.time).toLocaleString())}</td><td>${fmt(row.members)}</td><td>${fmt(row.online)}</td><td>${share.toFixed(2)}%</td><td><span class="change ${change<0?"negative":change>0?"positive":"neutral"}">${signed(change)}</span></td></tr>`;
-  }).join("") || `<tr><td class="empty" colspan="5">No readings in this period.</td></tr>`;
-}
-
-async function load(showSpinner = false) {
-  try {
-    if (showSpinner) byId("refreshButton").textContent = "Refreshing…";
-    const apiBase = String(window.DISCORD_STATS_API || "").replace(/\/$/, "");
-    if (!apiBase || apiBase.includes("YOUR-WORKER")) throw new Error("Set your Cloudflare Worker URL in config.js first.");
-    const response = await fetch(`${apiBase}/stats?cache=${Date.now()}`, {cache:"no-store"});
-    if (!response.ok) throw new Error(`Could not load Worker statistics (${response.status}).`);
-    render(await response.json());
-    byId("errorBox").classList.add("hidden");
-  } catch (error) {
-    byId("trackerStatus").textContent = "Unavailable";
-    byId("apiStatus").textContent = "Offline";
-    byId("statusDot").className = "pulse offline";
-    byId("bannerDot").className = "pulse offline";
-    byId("statusBanner").className = "status-banner offline";
-    byId("errorBox").textContent = error.message;
-    byId("errorBox").classList.remove("hidden");
-    console.error(error);
-  } finally {
-    byId("refreshButton").textContent = "Refresh";
-  }
-}
-
-function download(content, filename, type) {
-  const blob = new Blob([content], {type});
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportData(format) {
-  if (!fullPayload) return;
-  const history = filterHistory(fullPayload.history || []);
-  const stamp = new Date().toISOString().slice(0,10);
-  if (format === "json") download(JSON.stringify({...fullPayload, history}, null, 2), `discord-stats-${stamp}.json`, "application/json");
-  else {
-    const rows = [["time","members","online","online_percentage","change"], ...history.map(p=>[p.time,p.members,p.online,p.members?(p.online/p.members*100).toFixed(4):0,p.change ?? 0])];
-    const csv = rows.map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(",")).join("\n");
-    download(csv, `discord-stats-${stamp}.csv`, "text/csv");
-  }
-  byId("exportPopover").classList.add("hidden");
-}
-
-byId("rangeButtons").addEventListener("click", event => {
-  const button = event.target.closest("button[data-range]");
-  if (!button || !fullPayload) return;
-  selectedRange = button.dataset.range;
-  document.querySelectorAll("#rangeButtons button").forEach(item=>item.classList.toggle("active",item===button));
-  render(fullPayload);
-});
-byId("refreshButton").addEventListener("click",()=>load(true));
-byId("exportButton").addEventListener("click",()=>{
-  const popover = byId("exportPopover");
-  popover.classList.toggle("hidden");
-  byId("exportButton").setAttribute("aria-expanded",String(!popover.classList.contains("hidden")));
-});
-byId("exportPopover").addEventListener("click",event=>{
-  const button = event.target.closest("button[data-export]");
-  if (button) exportData(button.dataset.export);
-});
-document.addEventListener("click",event=>{
-  if (!event.target.closest(".export-menu")) byId("exportPopover").classList.add("hidden");
-});
-
-load();
-setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
-setInterval(load, 60_000);
 
