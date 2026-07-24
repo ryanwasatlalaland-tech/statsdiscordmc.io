@@ -26,7 +26,6 @@
 @media(max-width:700px){.server-banner{height:88px}.server-hero-content{grid-template-columns:auto 1fr;gap:13px;padding:0 15px 17px;margin-top:-31px}.server-icon-wrap,.server-icon,.server-icon-fallback{width:70px;height:70px}.server-icon,.server-icon-fallback{border-radius:21px}.server-identity{padding-top:34px}.server-identity h2{font-size:20px}.server-description{white-space:normal}.hero-counts{grid-column:1/3;padding-top:0;width:100%}.hero-counts>div{flex:1;min-width:0}.invite-button{grid-column:1/3;margin-top:0;width:100%;text-align:center}}
 
 
-/* Compact Discord-style Community and Verified badges */
 .server-name-row{
   display:flex !important;
   align-items:center !important;
@@ -143,10 +142,6 @@
   }
 }
 
-
-/* =========================================================
-   Mockup-inspired dashboard redesign
-   ========================================================= */
 :root{
   --bg:#070b09;
   --panel:#0e1411;
@@ -423,8 +418,6 @@ footer{
   .stats,.activity-stats{grid-template-columns:1fr}
 }
 
-
-/* Final sidebar brand alignment fix */
 .brand{
   min-width:0;
   overflow:hidden;
@@ -447,7 +440,6 @@ footer{
   text-overflow:ellipsis;
 }
 
-/* Collapsed tablet sidebar: show only the icon cleanly */
 @media (min-width:651px) and (max-width:900px){
   .brand{
     justify-content:center !important;
@@ -465,7 +457,6 @@ footer{
   }
 }
 
-/* Mobile top bar: restore the full brand without overlap */
 @media (max-width:650px){
   .brand{
     justify-content:flex-start !important;
@@ -486,8 +477,6 @@ footer{
   }
 }
 
-
-/* Final message activity layout fix */
 .message-activity-panel .activity-stats{
   display:grid !important;
   grid-template-columns:repeat(4,minmax(0,1fr)) !important;
@@ -528,7 +517,7 @@ footer{
   display:block !important;
   width:100% !important;
   margin:0 0 6px !important;
-  color:var(--purple) !important;
+  color:var(--white) !important;
   font:700 24px/1.05 Manrope,sans-serif !important;
   letter-spacing:-.45px !important;
   white-space:nowrap !important;
