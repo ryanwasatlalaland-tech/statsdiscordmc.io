@@ -8,6 +8,87 @@ const GAP_LIMIT = 10 * 60 * 1000;
 let fullPayload = null;
 let selectedRange = "24h";
 
+
+function ensureMessageActivityPanel() {
+  if (byId("messageActivityPanel")) return;
+  const panel = document.createElement("section");
+  panel.id = "messageActivityPanel";
+  panel.className = "panel message-activity-panel";
+  panel.innerHTML = `
+    <div class="panel-head">
+      <div>
+        <h2>Message activity</h2>
+        <p>Discord's relative message activity score. This is not a literal message count.</p>
+      </div>
+      <span id="messageActivityFreshness">Waiting for Discord…</span>
+    </div>
+    <div class="activity-stats">
+      <article><span>Current score</span><strong id="activityCurrent">—</strong><small>Latest activity bin</small></article>
+      <article><span>Average score</span><strong id="activityAverage">—</strong><small>Across supplied bins</small></article>
+      <article><span>Peak score</span><strong id="activityPeak">—</strong><small>Highest supplied bin</small></article>
+      <article><span>Lowest score</span><strong id="activityMinimum">—</strong><small>Lowest supplied bin</small></article>
+    </div>
+    <div class="chart-wrap large"><canvas id="messageActivityChart"></canvas></div>
+  `;
+  const target = byId("diagnostics") || document.querySelector(".members") || document.querySelector("footer");
+  if (target?.parentNode) target.parentNode.insertBefore(panel, target);
+  else document.querySelector("main")?.appendChild(panel);
+}
+
+function renderMessageActivity(payload) {
+  ensureMessageActivityPanel();
+  const activity = payload.messageActivity || payload.activity || {};
+  const bins = Array.isArray(activity.bins) ? activity.bins.map(Number).filter(Number.isFinite) : [];
+  const updatedAt = activity.lastUpdated || activity.updatedAt || null;
+  const current = Number.isFinite(Number(activity.current)) ? Number(activity.current) : bins.at(-1);
+  const average = Number.isFinite(Number(activity.average)) ? Number(activity.average) : (bins.length ? bins.reduce((a,b)=>a+b,0)/bins.length : null);
+  const peak = Number.isFinite(Number(activity.peak)) ? Number(activity.peak) : (bins.length ? Math.max(...bins) : null);
+  const minimum = Number.isFinite(Number(activity.minimum)) ? Number(activity.minimum) : (bins.length ? Math.min(...bins) : null);
+
+  byId("activityCurrent").textContent = current == null ? "—" : current.toFixed(0);
+  byId("activityAverage").textContent = average == null ? "—" : average.toFixed(1);
+  byId("activityPeak").textContent = peak == null ? "—" : peak.toFixed(0);
+  byId("activityMinimum").textContent = minimum == null ? "—" : minimum.toFixed(0);
+  byId("messageActivityFreshness").textContent = updatedAt ? `Discord updated ${new Date(updatedAt).toLocaleString()}` : "No activity timestamp";
+
+  const end = updatedAt ? new Date(updatedAt).getTime() : Date.now();
+  const data = bins.map((value, index) => ({
+    x: end - (bins.length - 1 - index) * 60 * 60 * 1000,
+    y: value
+  }));
+
+  makeChart("messageActivityChart", {
+    type:"line",
+    data:{datasets:[{
+      label:"Message activity score",
+      data,
+      borderColor:"#d3b16f",
+      backgroundColor:"rgba(211,177,111,.12)",
+      fill:true,
+      tension:.25,
+      pointRadius:bins.length > 72 ? 0 : 2,
+      pointHoverRadius:5
+    }]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{intersect:false,mode:"nearest"},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title:items=>items.length ? new Date(items[0].raw.x).toLocaleString() : "",
+          label:ctx=>`Activity score: ${ctx.raw.y}`,
+          afterLabel:()=>"Relative Discord activity, not messages"
+        }}
+      },
+      scales:{
+        x:{type:"linear",grid:{display:false},ticks:{maxTicksLimit:8,callback:value=>new Date(value).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit"})}},
+        y:{suggestedMin:0,suggestedMax:100,ticks:{precision:0},grid:{color:"#222c26"}}
+      }
+    }
+  });
+}
+
 Chart.defaults.color = "#94a099";
 Chart.defaults.borderColor = "#26312b";
 Chart.defaults.font.family = "DM Sans";
@@ -250,6 +331,7 @@ function render(payload) {
   for (let i=1;i<history.length;i++) hours[new Date(history[i].time).getHours()].change += Number(history[i].members)-Number(history[i-1].members);
   makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae"),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Net change: ${signed(ctx.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#222c26"}}}}});
 
+  renderMessageActivity(payload);
   renderHeatmap(allHistory);
 
   const recent = [...history].reverse().slice(0,50);
