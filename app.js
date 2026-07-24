@@ -33,8 +33,6 @@ function applyTheme(theme, rerender = false) {
   if (rerender && fullPayload) render(fullPayload);
 }
 
-applyTheme(preferredTheme());
-
 const byId = id => document.getElementById(id);
 const fmt = value => Number(value || 0).toLocaleString();
 const signed = value => `${Number(value) > 0 ? "+" : ""}${Number(value || 0).toLocaleString()}`;
@@ -43,6 +41,8 @@ const FIVE_MINUTES = 5 * 60 * 1000;
 const GAP_LIMIT = 10 * 60 * 1000;
 let fullPayload = null;
 let selectedRange = "24h";
+
+applyTheme(preferredTheme());
 
 
 function ensureMessageActivityPanel() {
@@ -617,4 +617,46 @@ function download(content, filename, type) {
 }
 
 function exportData(format) {
+  if (!fullPayload) return;
+  const history = filterHistory(fullPayload.history || []);
+  const stamp = new Date().toISOString().slice(0,10);
+  if (format === "json") download(JSON.stringify({...fullPayload, history}, null, 2), `discord-stats-${stamp}.json`, "application/json");
+  else {
+    const rows = [["time","members","online","online_percentage","change"], ...history.map(p=>[p.time,p.members,p.online,p.members?(p.online/p.members*100).toFixed(4):0,p.change ?? 0])];
+    const csv = rows.map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(",")).join("\n");
+    download(csv, `discord-stats-${stamp}.csv`, "text/csv");
+  }
+  byId("exportPopover").classList.add("hidden");
+}
+
+byId("rangeButtons").addEventListener("click", event => {
+  const button = event.target.closest("button[data-range]");
+  if (!button || !fullPayload) return;
+  selectedRange = button.dataset.range;
+  document.querySelectorAll("#rangeButtons button").forEach(item=>item.classList.toggle("active",item===button));
+  render(fullPayload);
+});
+byId("refreshButton").addEventListener("click",()=>load(true));
+byId("exportButton").addEventListener("click",()=>{
+  const popover = byId("exportPopover");
+  popover.classList.toggle("hidden");
+  byId("exportButton").setAttribute("aria-expanded",String(!popover.classList.contains("hidden")));
+});
+byId("exportPopover").addEventListener("click",event=>{
+  const button = event.target.closest("button[data-export]");
+  if (button) exportData(button.dataset.export);
+});
+document.addEventListener("click",event=>{
+  if (!event.target.closest(".export-menu")) byId("exportPopover").classList.add("hidden");
+});
+
+byId("themeToggle")?.addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(next, true);
+});
+
+load();
+setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
+setInterval(load, 60_000);
+
 
