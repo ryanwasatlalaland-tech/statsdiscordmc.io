@@ -422,3 +422,138 @@ footer{
 @media(max-width:420px){
   .stats,.activity-stats{grid-template-columns:1fr}
 }
+
+
+/* Final sidebar brand alignment fix */
+.brand{
+  min-width:0;
+  overflow:hidden;
+}
+
+.brand-logo{
+  flex:0 0 42px;
+}
+
+.brand-copy{
+  min-width:0;
+  overflow:hidden;
+}
+
+.brand-copy strong,
+.brand-copy small{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Collapsed tablet sidebar: show only the icon cleanly */
+@media (min-width:651px) and (max-width:900px){
+  .brand{
+    justify-content:center !important;
+    padding:4px 0 !important;
+  }
+
+  .brand-copy{
+    display:none !important;
+  }
+
+  .brand-logo{
+    width:42px !important;
+    height:42px !important;
+    flex-basis:42px !important;
+  }
+}
+
+/* Mobile top bar: restore the full brand without overlap */
+@media (max-width:650px){
+  .brand{
+    justify-content:flex-start !important;
+    overflow:visible !important;
+  }
+
+  .brand-copy{
+    display:grid !important;
+    min-width:0 !important;
+  }
+
+  .brand-copy strong{
+    display:block !important;
+  }
+
+  .brand-copy small{
+    display:block !important;
+  }
+}
+
+
+/* Final message activity layout fix */
+.message-activity-panel .activity-stats{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+  width:100% !important;
+  margin:0 0 18px !important;
+  padding:0 !important;
+}
+
+.message-activity-panel .activity-stats article{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  min-width:0 !important;
+  min-height:104px !important;
+  margin:0 !important;
+  padding:14px 15px !important;
+  border:1px solid var(--line) !important;
+  border-radius:12px !important;
+  background:linear-gradient(145deg,var(--panel2),var(--panel)) !important;
+  box-shadow:none !important;
+}
+
+.message-activity-panel .activity-stats article > span{
+  display:block !important;
+  width:100% !important;
+  margin:0 0 8px !important;
+  color:var(--muted) !important;
+  font-size:10px !important;
+  font-weight:600 !important;
+  line-height:1.25 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+}
+
+.message-activity-panel .activity-stats article > strong{
+  display:block !important;
+  width:100% !important;
+  margin:0 0 6px !important;
+  color:var(--purple) !important;
+  font:700 24px/1.05 Manrope,sans-serif !important;
+  letter-spacing:-.45px !important;
+  white-space:nowrap !important;
+}
+
+.message-activity-panel .activity-stats article > small{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+  color:var(--muted) !important;
+  font-size:9px !important;
+  line-height:1.35 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+
+@media(max-width:1050px){
+  .message-activity-panel .activity-stats{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:520px){
+  .message-activity-panel .activity-stats{
+    grid-template-columns:1fr !important;
+  }
+}
