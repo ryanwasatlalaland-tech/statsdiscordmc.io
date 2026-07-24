@@ -37,12 +37,15 @@
 <div class="shell">
   <aside>
     <a class="brand" href="#overview">
+      <img class="brand-logo" src="./assets/favicon.svg" alt="">
+      <span class="brand-copy"><strong>MINECRAFT</strong><small>Discord Server Tracker</small></span>
     </a>
     <nav aria-label="Primary navigation">
       <a class="active" href="#overview"><span>▣</span>Overview</a>
       <a href="#members"><span>↗</span>Growth</a>
       <a href="#online"><span>●</span>Online</a>
       <a href="#activity"><span>ϟ</span>Activity</a>
+      <a href="./top-servers.html"><span>♛</span>Top Servers</a>
       <a href="#history"><span>▤</span>History</a>
       <a href="#diagnostics"><span>ⓘ</span>Diagnostics</a>
     </nav>
@@ -90,13 +93,14 @@
             <h2 id="heroServerName">Loading server…</h2>
             <div class="server-badges" id="serverBadges" aria-label="Server badges"></div>
           </div>
+          <p id="serverMeta">Loading the latest Discord statistics…</p>
           <p class="server-description" id="serverDescription"></p>
         </div>
         <div class="hero-counts">
           <div><span>Members</span><strong id="heroMembers">—</strong></div>
           <div><span>Online</span><strong id="heroOnline">—</strong></div>
         </div>
-        <a class="invite-button" id="inviteButton" href="#" target="_blank" rel="noopener noreferrer">Open Discord ↗</a>
+        <a class="invite-button" id="inviteButton" href="#" target="_blank" rel="noopener noreferrer">Open Discord invite ↗</a>
       </div>
     </section>
 
@@ -169,7 +173,7 @@
       <div class="table-wrap"><table><thead><tr><th>Checked</th><th>Total members</th><th>Online</th><th>Online share</th><th>Change</th></tr></thead><tbody id="recent"><tr><td class="empty" colspan="5">Loading snapshots…</td></tr></tbody></table></div>
     </section>
 
-    <footer>Made by RyanFol</footer>
+    <footer>Approximate statistics from a Discord invite · Updated every five minutes · Made by RyanFol</footer>
   </main>
 </div>
 </body>
