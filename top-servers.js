@@ -208,7 +208,7 @@ function render(data) {
   renderHighlights(data.servers);
   byId("topUpdated").textContent = `Updated ${new Date(data.updatedAt).toLocaleString()}`;
   byId("trackerStatus").textContent = data.errors?.length ? "Tracker partially live" : "Tracker live";
-  byId("statusSmall").textContent = `${data.servers.length} of 6 servers available`;
+  byId("statusSmall").textContent = `${data.servers.length} of 10 servers available`;
   byId("statusDot").className = data.errors?.length ? "pulse warning" : "pulse";
   if(data.errors?.length){
     byId("topError").textContent = `Discord temporarily rejected some invite lookups: ${data.errors.join(" | ")}. Cached results remain visible where available.`;
