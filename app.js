@@ -56,7 +56,7 @@ function ensureMessageActivityPanel() {
         <h2>Message activity</h2>
         <p>Discord's relative message activity score. This is not a literal message count.</p>
       </div>
-      <span id="messageActivityFreshness">Waiting for Discord..</span>
+      <span id="messageActivityFreshness">Waiting for Discord…</span>
     </div>
     <div class="activity-stats">
       <article><span>Current score</span><strong id="activityCurrent">—</strong><small>Latest activity bin</small></article>
@@ -487,6 +487,7 @@ function render(payload) {
   byId("missingIntervals").textContent = fmt(missing);
   byId("nextRun").textContent = new Date(new Date(latest.time).getTime() + FIVE_MINUTES).toLocaleString();
   byId("apiStatus").textContent = "Online";
+  byId("serverMeta").textContent = `Watching ${payload.server?.name || "a Discord server"} through discord.gg/${payload.server?.inviteCode || "invite"}`;
   byId("historyCount").textContent = `${fmt(history.length)} readings selected`;
   setStatus(latest.time);
 
