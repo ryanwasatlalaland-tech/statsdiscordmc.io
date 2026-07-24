@@ -487,7 +487,6 @@ function render(payload) {
   byId("missingIntervals").textContent = fmt(missing);
   byId("nextRun").textContent = new Date(new Date(latest.time).getTime() + FIVE_MINUTES).toLocaleString();
   byId("apiStatus").textContent = "Online";
-  byId("serverMeta").textContent = `Watching ${payload.server?.name || "a Discord server"} through discord.gg/${payload.server?.inviteCode || "invite"}`;
   byId("historyCount").textContent = `${fmt(history.length)} readings selected`;
   setStatus(latest.time);
 
@@ -658,5 +657,3 @@ byId("themeToggle")?.addEventListener("click", () => {
 load();
 setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
 setInterval(load, 60_000);
-
-
