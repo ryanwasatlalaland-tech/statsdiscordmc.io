@@ -1,9 +1,17 @@
 {
   "server": {
-    "name": "Minecraft Discord",
-    "inviteCode": "your-code",
-    "channel": null
+    "name": "MINECRAFT",
+    "inviteCode": "minecraft",
+    "channel": "😎│rules",
+    "guildId": "302094807046684672"
   },
-  "updatedAt": null,
-  "history": []
+  "updatedAt": "2026-07-24T02:23:00.737Z",
+  "history": [
+    {
+      "time": "2026-07-24T02:23:00.737Z",
+      "members": 4066667,
+      "online": 439333,
+      "change": 0
+    }
+  ]
 }
