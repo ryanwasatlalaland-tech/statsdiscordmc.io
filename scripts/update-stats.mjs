@@ -6,8 +6,34 @@ if (!inviteInput) throw new Error("DISCORD_INVITE is missing. Add it as a GitHub
 const inviteCode = inviteInput.replace(/^https?:\/\/(www\.)?(discord\.gg|discord(app)?\.com\/invite)\//i, "").split(/[/?#]/)[0];
 if (!inviteCode) throw new Error("Could not extract an invite code from DISCORD_INVITE.");
 
+const fetchWithRetry = async (url, options, maxRetries = 3) => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) return response;
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("retry-after") || 1;
+        console.log(`Rate limited. Waiting ${retryAfter}s before retry ${attempt}/${maxRetries}`);
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        continue;
+      }
+      if (attempt === maxRetries) return response;
+      console.log(`Attempt ${attempt}/${maxRetries} failed with ${response.status}. Retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      console.log(`Attempt ${attempt}/${maxRetries} failed: ${error.message}. Retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+};
+
 const endpoint = `https://discord.com/api/v10/invites/${encodeURIComponent(inviteCode)}?with_counts=true&with_expiration=true`;
-const response = await fetch(endpoint, {headers:{"User-Agent":"InvitePulseGitHubPages/1.0"}});
+const response = await fetchWithRetry(endpoint, {
+  headers: {"User-Agent": "InvitePulseGitHubPages/1.0"},
+  timeout: 10000
+});
+
 if (!response.ok) throw new Error(`Discord invite request failed: ${response.status} ${response.statusText}`);
 const invite = await response.json();
 const snapshot = {time:new Date().toISOString(),members:Number(invite.approximate_member_count||0),online:Number(invite.approximate_presence_count||0)};
