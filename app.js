@@ -191,12 +191,8 @@ function changeSince(history, duration) {
   const targetTime = latestTime - duration;
   const baseline = closestReading(ordered, targetTime);
 
-  // Do not silently compare against the oldest reading when the proper
-  // 24-hour baseline is missing. That was the cause of incorrect swings.
   if (!baseline) return null;
 
-  // Discord invite member totals are approximate and can jump between
-  // requests. Use local medians around both endpoints to reduce noise.
   const currentMembers =
     memberMedianNear(ordered, latestTime, 20 * 60 * 1000) ??
     Number(latest.members);
@@ -220,8 +216,6 @@ function allTimeChange(history) {
   const firstTime = new Date(ordered[0].time).getTime();
   const lastTime = new Date(ordered.at(-1).time).getTime();
 
-  // Use medians near the beginning and end of the complete dataset so one
-  // approximate Discord invite reading cannot distort the all-time result.
   const startingMembers =
     memberMedianNear(ordered, firstTime, 30 * 60 * 1000) ??
     Number(ordered[0].members);
