@@ -1,4 +1,40 @@
 const charts = {};
+
+const THEME_KEY = "discord-stats-theme";
+
+function preferredTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+function applyTheme(theme, rerender = false) {
+  const isDark = theme !== "light";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+
+  const button = byId("themeToggle");
+  if (button) {
+    button.classList.toggle("is-light", !isDark);
+    button.setAttribute("aria-pressed", String(isDark));
+    const label = button.querySelector("span");
+    if (label) label.textContent = isDark ? "Dark mode" : "Light mode";
+  }
+
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.content = isDark ? "#070b09" : "#edf3ee";
+
+  if (window.Chart) {
+    Chart.defaults.color = isDark ? "#94a099" : "#5f6d64";
+    Chart.defaults.borderColor = isDark ? "#26312b" : "#d7e0da";
+  }
+
+  if (rerender && fullPayload) render(fullPayload);
+}
+
+applyTheme(preferredTheme());
+
 const byId = id => document.getElementById(id);
 const fmt = value => Number(value || 0).toLocaleString();
 const signed = value => `${Number(value) > 0 ? "+" : ""}${Number(value || 0).toLocaleString()}`;
@@ -38,21 +74,8 @@ function ensureMessageActivityPanel() {
 function renderMessageActivity(payload) {
   ensureMessageActivityPanel();
   const activity = payload.messageActivity || payload.activity || {};
-  const rawLiveliness = payload.liveliness || payload.invite?.liveliness || {};
-
-  const sourceBins =
-    Array.isArray(activity.bins) ? activity.bins :
-    Array.isArray(activity.msg_activity_bins) ? activity.msg_activity_bins :
-    Array.isArray(rawLiveliness.msg_activity_bins) ? rawLiveliness.msg_activity_bins :
-    [];
-
-  const bins = sourceBins.map(Number).filter(Number.isFinite);
-  const updatedAt =
-    activity.lastUpdated ||
-    activity.updatedAt ||
-    activity.last_updated_ts ||
-    rawLiveliness.last_updated_ts ||
-    null;
+  const bins = Array.isArray(activity.bins) ? activity.bins.map(Number).filter(Number.isFinite) : [];
+  const updatedAt = activity.lastUpdated || activity.updatedAt || null;
   const current = Number.isFinite(Number(activity.current)) ? Number(activity.current) : bins.at(-1);
   const average = Number.isFinite(Number(activity.average)) ? Number(activity.average) : (bins.length ? bins.reduce((a,b)=>a+b,0)/bins.length : null);
   const peak = Number.isFinite(Number(activity.peak)) ? Number(activity.peak) : (bins.length ? Math.max(...bins) : null);
@@ -69,9 +92,6 @@ function renderMessageActivity(payload) {
     x: end - (bins.length - 1 - index) * 60 * 60 * 1000,
     y: value
   }));
-
-  const canvas = byId("messageActivityChart");
-  canvas.parentElement.classList.toggle("activity-empty", bins.length === 0);
 
   makeChart("messageActivityChart", {
     type:"line",
@@ -98,29 +118,15 @@ function renderMessageActivity(payload) {
         }}
       },
       scales:{
-        x:{
-          type:"linear",
-          display:bins.length > 0,
-          grid:{display:false},
-          ticks:{
-            maxTicksLimit:8,
-            callback:value=>new Date(value).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit"})
-          }
-        },
-        y:{
-          display:bins.length > 0,
-          suggestedMin:0,
-          suggestedMax:100,
-          ticks:{precision:0},
-          grid:{color:"#222c26"}
-        }
+        x:{type:"linear",grid:{display:false},ticks:{maxTicksLimit:8,callback:value=>new Date(value).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit"})}},
+        y:{suggestedMin:0,suggestedMax:100,ticks:{precision:0},grid:{color:document.documentElement.dataset.theme === "light" ? "#dfe7e1" : "#222c26"}}
       }
     }
   });
 }
 
-Chart.defaults.color = "#94a099";
-Chart.defaults.borderColor = "#26312b";
+Chart.defaults.color = document.documentElement.dataset.theme === "light" ? "#5f6d64" : "#94a099";
+Chart.defaults.borderColor = document.documentElement.dataset.theme === "light" ? "#d7e0da" : "#26312b";
 Chart.defaults.font.family = "DM Sans";
 
 function makeChart(id, config) {
@@ -488,20 +494,20 @@ function render(payload) {
   makeChart("memberChart", {
     type:"line",
     data:{datasets:[{label:"Members",data:chartData(history,"members"),borderColor:"#9cc8a5",backgroundColor:"rgba(92,151,105,.14)",fill:true,tension:.22,spanGaps:false,pointRadius:history.length > 70 ? 0 : 2,pointHoverRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Members")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:"#222c26"}}}}
+    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Members")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:document.documentElement.dataset.theme === "light" ? "#dfe7e1" : "#222c26"}}}}
   });
 
   makeChart("onlineTrendChart", {
     type:"line",
     data:{datasets:[{label:"Online",data:chartData(history,"online"),borderColor:"#74a982",backgroundColor:"rgba(74,126,88,.12)",fill:true,tension:.22,spanGaps:false,pointRadius:history.length > 70 ? 0 : 2,pointHoverRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Online")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:"#222c26"}}}}
+    options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:"nearest"},plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.raw?.source?.gap ? "Collection gap" : new Date(items[0].raw.x).toLocaleString(),label:ctx=>pointTooltip(ctx,"Online")}}},scales:{x:timeScaleOptions(),y:{beginAtZero:false,ticks:{callback:value=>fmt(value)},grid:{color:document.documentElement.dataset.theme === "light" ? "#dfe7e1" : "#222c26"}}}}
   });
 
   makeChart("onlineShareChart", {type:"doughnut",data:{labels:["Online","Offline"],datasets:[{data:[latest.online,Math.max(0,latest.members-latest.online)],backgroundColor:["#8fbd99","#28332d"],borderWidth:4,borderColor:"#131916"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"68%",plugins:{legend:{position:"bottom",labels:{boxWidth:8,usePointStyle:true,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)} (${(ctx.raw/latest.members*100).toFixed(2)}%)`}}}}});
 
   const hours = Array.from({length:24},(_,hour)=>({hour,change:0}));
   for (let i=1;i<history.length;i++) hours[new Date(history[i].time).getHours()].change += Number(history[i].members)-Number(history[i-1].members);
-  makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae"),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Net change: ${signed(ctx.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#222c26"}}}}});
+  makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae"),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Net change: ${signed(ctx.raw)}`}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:document.documentElement.dataset.theme === "light" ? "#dfe7e1" : "#222c26"}}}}});
 
   renderMessageActivity(payload);
   renderHeatmap(allHistory);
@@ -611,39 +617,4 @@ function download(content, filename, type) {
 }
 
 function exportData(format) {
-  if (!fullPayload) return;
-  const history = filterHistory(fullPayload.history || []);
-  const stamp = new Date().toISOString().slice(0,10);
-  if (format === "json") download(JSON.stringify({...fullPayload, history}, null, 2), `discord-stats-${stamp}.json`, "application/json");
-  else {
-    const rows = [["time","members","online","online_percentage","change"], ...history.map(p=>[p.time,p.members,p.online,p.members?(p.online/p.members*100).toFixed(4):0,p.change ?? 0])];
-    const csv = rows.map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(",")).join("\n");
-    download(csv, `discord-stats-${stamp}.csv`, "text/csv");
-  }
-  byId("exportPopover").classList.add("hidden");
-}
 
-byId("rangeButtons").addEventListener("click", event => {
-  const button = event.target.closest("button[data-range]");
-  if (!button || !fullPayload) return;
-  selectedRange = button.dataset.range;
-  document.querySelectorAll("#rangeButtons button").forEach(item=>item.classList.toggle("active",item===button));
-  render(fullPayload);
-});
-byId("refreshButton").addEventListener("click",()=>load(true));
-byId("exportButton").addEventListener("click",()=>{
-  const popover = byId("exportPopover");
-  popover.classList.toggle("hidden");
-  byId("exportButton").setAttribute("aria-expanded",String(!popover.classList.contains("hidden")));
-});
-byId("exportPopover").addEventListener("click",event=>{
-  const button = event.target.closest("button[data-export]");
-  if (button) exportData(button.dataset.export);
-});
-document.addEventListener("click",event=>{
-  if (!event.target.closest(".export-menu")) byId("exportPopover").classList.add("hidden");
-});
-
-load();
-setInterval(()=>fullPayload?.history?.length && setStatus(fullPayload.history.at(-1).time), 30_000);
-setInterval(load, 60_000);
