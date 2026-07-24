@@ -40,19 +40,64 @@ function render(payload) {
   byId("statusDot").classList.remove("offline");
 
   const labels = history.map(point => new Date(point.time).toLocaleDateString(undefined,{month:"short",day:"numeric"}));
-  makeChart("growthChart", {type:"line",data:{labels,datasets:[{label:"Members",data:history.map(p=>p.members),borderColor:"#8fbd99",backgroundColor:"rgba(89,145,101,.13)",fill:true,tension:.3,pointRadius:history.length>60?0:2},{label:"Online",data:history.map(p=>p.online),borderColor:"#527a5c",tension:.3,pointRadius:history.length>60?0:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:false,ticks:{precision:0},grid:{color:"#222c26"}}}}});
-  makeChart("onlineChart", {type:"doughnut",data:{labels:["Online","Offline"],datasets:[{data:[latest.online,Math.max(0,latest.members-latest.online)],backgroundColor:["#8fbd99","#28332d"],borderWidth:4,borderColor:"#131916"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"68%",plugins:{legend:{position:"bottom",labels:{boxWidth:8,usePointStyle:true,font:{size:10}}}}}});
+  makeChart("growthChart", {type:"line",data:{labels,datasets:[{label:"Members",data:history.map(p=>p.members),borderColor:"#8fbd99",backgroundColor:"rgba(89,145,101,.13)",fill:true,tension:.3,pointRa[...]
+  makeChart("onlineChart", {type:"doughnut",data:{labels:["Online","Offline"],datasets:[{data:[latest.online,Math.max(0,latest.members-latest.online)],backgroundColor:["#8fbd99","#28332d"],borderWidth[...]
 
   const hours = Array.from({length:24},(_,hour)=>({hour,change:0}));
   for (let i=1;i<history.length;i++) hours[new Date(history[i].time).getHours()].change += history[i].members-history[i-1].members;
-  makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae"),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#222c26"}}}}});
+  makeChart("hourChart", {type:"bar",data:{labels:hours.map(p=>`${String(p.hour).padStart(2,"0")}:00`),datasets:[{data:hours.map(p=>p.change),backgroundColor:hours.map(p=>p.change<0?"#b88778":"#a8c8ae[...]
 
   const recent = [...history].reverse().slice(0,30);
   byId("recent").innerHTML = recent.map((row,index) => {
     const previous = history[history.length - 2 - index];
     const change = previous ? row.members - previous.members : Number(row.change || 0);
-    return `<tr><td>${escapeHtml(new Date(row.time).toLocaleString())}</td><td>${number(row.members)}</td><td>${number(row.online)}</td><td><span class="change ${change<0?"negative":""}">${signed(change)}</span></td></tr>`;
+    return `<tr><td>${escapeHtml(new Date(row.time).toLocaleString())}</td><td>${number(row.members)}</td><td>${number(row.online)}</td><td><span class="change ${change<0?"negative":""}">${signed(chan[...]
   }).join("");
+}
+
+async function triggerWorkflow() {
+  const button = byId("triggerWorkflowBtn");
+  const originalText = button.textContent;
+  
+  try {
+    button.disabled = true;
+    button.textContent = "Running...";
+    
+    const response = await fetch(`https://api.github.com/repos/ryanwasatlalaland-tech/statsdiscordmc.io/actions/workflows/update-stats.yml/dispatches`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": "Bearer " + (localStorage.getItem("github_token") || ""),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ref: "main"
+      })
+    });
+    
+    if (response.status === 204) {
+      button.textContent = "✓ Workflow triggered";
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.disabled = false;
+      }, 2000);
+      // Auto-reload data after a delay to show updated stats
+      setTimeout(load, 5000);
+    } else if (response.status === 401) {
+      throw new Error("GitHub token required. Please set one in localStorage with key 'github_token'");
+    } else {
+      const error = await response.json();
+      throw new Error(error.message || `Failed to trigger workflow (${response.status})`);
+    }
+  } catch (error) {
+    button.textContent = "✗ Error";
+    console.error("Workflow trigger error:", error);
+    alert("Error triggering workflow: " + error.message);
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.disabled = false;
+    }, 2000);
+  }
 }
 
 async function load() {
@@ -72,4 +117,7 @@ async function load() {
 }
 
 byId("range").addEventListener("change", load);
+if (byId("triggerWorkflowBtn")) {
+  byId("triggerWorkflowBtn").addEventListener("click", triggerWorkflow);
+}
 load();
