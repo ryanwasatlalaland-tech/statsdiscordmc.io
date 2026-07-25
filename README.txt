@@ -1,25 +1,26 @@
-BLOCKPULSE UI OVERHAUL
+DISCORD STATS UI V3 — NO BRANDING / NO LOCAL ASSETS
 
-Replace these website files:
-- index.html
-- styles.css
-- top-servers.html
-- top-servers.css
-- top-servers.js
-- assets/favicon.svg
+Replace the full contents of your GitHub Pages site with this package.
 
-app.js and config.js are included unchanged for convenience.
+Included:
+- Green Minecraft Analytics page
+- Blue Top Servers page
+- No product/logo branding in the sidebar
+- No assets folder
+- No references to assets/
+- Live leaderboard with trend badges
+- Server profile modal
+- Quick Compare buttons
+- Sticky comparison queue
+- Bar, radar and stat-table comparison views
+- Winner badges for comparison metrics
+- Difference and momentum indicators
+- Comparison PNG export
+- Mobile responsive layouts
+- Existing Cloudflare API integration retained
 
-New UI:
-- Completely refreshed visual system
-- New BlockPulse branding
-- Creeper navigation icon
-- Responsive sidebar and mobile bottom navigation
-- Cleaner analytics cards, charts, tables and Discovery directory
-- New Comparison Studio
-- Choose up to four Top 10 servers
-- Compare members, online, online share, 24h growth, boosts or activity
-- Automatic winner and gap calculations
-- Mobile comparison drawer
+Audit:
+- Asset-reference files remaining: none
+- Branding-reference matches remaining: none
 
 No Cloudflare Worker changes are required.
