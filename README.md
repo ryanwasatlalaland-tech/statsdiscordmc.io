@@ -3,6 +3,8 @@
 # NEW ADDITIONS 
 Dashboard now has a top 10 server list to track growth or decline
 
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
 WIP dashboard to track Minecraft Discord Joins/Leaves and Message activity mostly for my own curiosity but who knows what it will morph into 
 
 # Created as a fully open Server Insights style analytics for all
