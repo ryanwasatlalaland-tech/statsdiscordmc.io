@@ -75,3 +75,11 @@
 .top-server-card[data-code="minecraft"]{
   border-color:color-mix(in srgb,#8fe66f 28%,var(--line));
 }
+
+@media(max-width:650px){
+  .top-page-header{margin-bottom:12px}
+  .top-page-header .header-actions{margin-top:0}
+  .crown-mark{font-size:8px;padding:5px 7px}
+  .card-rank{top:10px;left:10px}
+  .server-modal-card{-webkit-overflow-scrolling:touch}
+}
