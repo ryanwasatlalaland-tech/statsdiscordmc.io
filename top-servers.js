@@ -183,10 +183,9 @@ function renderLeaderboard(servers) {
       <td><strong>${fmt(server.members)}</strong></td>
       <td>${fmt(server.online)} <small>(${pct(server.online,server.members).toFixed(1)}%)</small></td>
       <td class="${growthClass(server.growth24h)}">${signed(server.growth24h)}</td>
-      <td>${fmt(server.boosts || 0)} · Tier ${server.boostTier || 0}</td>
-      <td><button class="expand-button" data-expand="${serverKey(server)}">Expand</button></td>
+      <td>${server.boosts == null ? "—" : `${fmt(server.boosts)} · Tier ${server.boostTier ?? "—"}`}</td>
     </tr>`;
-  }).join("") : '<tr><td colspan="7" class="empty">No servers match your search.</td></tr>';
+  }).join("") : '<tr><td colspan="6" class="empty">No servers match your search.</td></tr>';
 }
 
 function renderCards(servers) {
@@ -473,14 +472,10 @@ document.addEventListener("click",event=>{
     byId("exportTopPopover")?.classList.add("hidden");
     byId("exportTopButton")?.setAttribute("aria-expanded", "false");
   }
-  const target = event.target.closest("[data-expand],.top-server-card,tr[data-code]");
-  if (target && !event.target.closest("[data-close-modal]")) openModal(target.dataset.expand || target.dataset.code);
   if (event.target.closest("[data-close-modal]")) closeModal();
 });
 document.addEventListener("keydown",event=>{
   if (event.key==="Escape") closeModal();
-  const card = event.target.closest(".top-server-card");
-  if (card && (event.key==="Enter" || event.key===" ")) {event.preventDefault();openModal(card.dataset.code);}
 });
 
 byId("discoverySearch")?.addEventListener("input", renderDiscoveryCards);
