@@ -124,6 +124,29 @@ function sortedServers(servers) {
   return [...servers].sort((a, b) => values[mode](b) - values[mode](a));
 }
 
+
+function renderFeaturedMinecraft(server) {
+  if(!server) {
+    byId("featuredMinecraft")?.classList.add("hidden");
+    return;
+  }
+
+  byId("featuredMinecraft")?.classList.remove("hidden");
+  byId("featuredMinecraftName").textContent = server.name || "Minecraft";
+  byId("featuredMinecraftDescription").textContent =
+    server.description || "The official Minecraft Discord community.";
+  byId("featuredMinecraftMembers").textContent = fmt(server.members);
+  byId("featuredMinecraftOnline").textContent = fmt(server.online);
+  byId("featuredMinecraftRate").textContent =
+    server.members ? `${pct(server.online,server.members).toFixed(1)}%` : "—";
+
+  const icon = byId("featuredMinecraftIcon");
+  if(icon && server.iconUrl) icon.src = server.iconUrl;
+
+  const link = byId("featuredMinecraftLink");
+  if(link) link.href = server.inviteUrl || "https://discord.gg/minecraft";
+}
+
 function renderHighlights(servers) {
   const largest = [...servers].sort((a,b)=>b.members-a.members)[0];
   const fastest = [...servers].filter(s=>s.growth24h != null).sort((a,b)=>b.growth24h-a.growth24h)[0];
@@ -272,6 +295,7 @@ function closeModal() {
 
 function render(data) {
   data.servers = [...(data.servers || [])].sort((a,b)=>b.members-a.members).slice(0,10);
+  renderFeaturedMinecraft(data.featuredServer);
   payload = data;
   renderHighlights(data.servers);
   byId("topUpdated").textContent = `Updated ${new Date(data.updatedAt).toLocaleString()}`;
