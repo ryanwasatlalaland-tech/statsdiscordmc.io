@@ -126,32 +126,24 @@ function sortedServers(servers) {
 
 
 function renderFeaturedMinecraft(server) {
-  const section = byId("featuredMinecraft");
-  if(!section) return;
-
   if(!server) {
-    section.classList.add("hidden");
+    byId("featuredMinecraft")?.classList.add("hidden");
     return;
   }
 
-  section.classList.remove("hidden");
-
-  const name = byId("featuredMinecraftName");
-  const description = byId("featuredMinecraftDescription");
-  const members = byId("featuredMinecraftMembers");
-  const online = byId("featuredMinecraftOnline");
-  const rate = byId("featuredMinecraftRate");
-  const icon = byId("featuredMinecraftIcon");
-  const link = byId("featuredMinecraftLink");
-
-  if(name) name.textContent = server.name || "Minecraft";
-  if(description) description.textContent =
+  byId("featuredMinecraft")?.classList.remove("hidden");
+  byId("featuredMinecraftName").textContent = server.name || "Minecraft";
+  byId("featuredMinecraftDescription").textContent =
     server.description || "The official Minecraft Discord community.";
-  if(members) members.textContent = fmt(server.members);
-  if(online) online.textContent = fmt(server.online);
-  if(rate) rate.textContent =
+  byId("featuredMinecraftMembers").textContent = fmt(server.members);
+  byId("featuredMinecraftOnline").textContent = fmt(server.online);
+  byId("featuredMinecraftRate").textContent =
     server.members ? `${pct(server.online,server.members).toFixed(1)}%` : "—";
+
+  const icon = byId("featuredMinecraftIcon");
   if(icon && server.iconUrl) icon.src = server.iconUrl;
+
+  const link = byId("featuredMinecraftLink");
   if(link) link.href = server.inviteUrl || "https://discord.gg/minecraft";
 }
 
@@ -476,6 +468,25 @@ document.addEventListener("keydown",event=>{
   const card = event.target.closest(".top-server-card");
   if (card && (event.key==="Enter" || event.key===" ")) {event.preventDefault();openModal(card.dataset.code);}
 });
+
+byId("discoverySearch")?.addEventListener("input", renderDiscoveryCards);
+byId("discoverySort")?.addEventListener("change", renderDiscoveryCards);
+
+byId("discoveryPrevious")?.addEventListener("click", () => {
+  if (discoveryPage > 1) loadDiscovery(discoveryPage - 1);
+});
+
+byId("discoveryNext")?.addEventListener("click", () => {
+  const totalPages = Number(discoveryPayload?.totalPages || Infinity);
+  if (discoveryPage < totalPages) loadDiscovery(discoveryPage + 1);
+});
+
+byId("discoveryPageNumbers")?.addEventListener("click", event => {
+  const button = event.target.closest("[data-discovery-page]");
+  if (button) loadDiscovery(Number(button.dataset.discoveryPage));
+});
+
 load();
+loadDiscovery(1);
 setInterval(load,60_000);
 
