@@ -254,7 +254,7 @@ function renderChart() {
       datasets:[{
         label:metric.label,
         data:visibleServers.map(metric.value),
-        backgroundColor:visibleServers.map((_,index)=>index===0 ? "rgba(114,223,85,.72)" : "rgba(78,183,255,.58)"),
+        backgroundColor:visibleServers.map((_,index)=>index===0 ? "rgba(99,216,255,.72)" : "rgba(78,183,255,.58)"),
         borderColor:visibleServers.map((_,index)=>index===0 ? "#63d8ff" : "#4e8fff"),
         borderWidth:1,
         borderRadius:8
