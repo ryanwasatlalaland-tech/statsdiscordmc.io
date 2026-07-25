@@ -27,7 +27,7 @@
 <body>
 <div class="shell">
   <aside>
-
+   
     <nav aria-label="Primary navigation">
         <a class="active" href="./top-servers.html"><span>♛</span>Top Servers</a>
       <a href="./index.html"><span>▣</span>Minecraft Analytics</a>
@@ -49,17 +49,10 @@
       <div>
         <p class="eyebrow">Public invite comparison</p>
         <h1>Top Discord servers</h1>
-        <p>The 10 largest communities currently shown by Discord Discovery. Minecraft is featured separately above thanks to a quirk of where i get the data for this part.</p>
+        <p>The 10 largest communities currently shown by Discord Discovery. Minecraft is featured separately above.</p>
       </div>
       <div class="header-actions">
         <button class="secondary" id="refreshTopButton" type="button">Refresh</button>
-        <div class="export-menu">
-          <button class="secondary" id="exportTopButton" type="button" aria-expanded="false">Export ▾</button>
-          <div class="export-popover hidden" id="exportTopPopover">
-            <button type="button" data-top-export="csv">Download CSV</button>
-            <button type="button" data-top-export="json">Download JSON</button>
-          </div>
-        </div>
       </div>
     </header>
 
@@ -122,13 +115,13 @@
 
     <section class="panel leaderboard-panel">
       <div class="panel-head">
-        <div><h2>Live leaderboard</h2><p></p></div>
+        <div><h2>Live leaderboard</h2><p>Live statistics for the current Top 10 servers.</p></div>
         <span id="topUpdated">Waiting for data…</span>
       </div>
       <div class="top-table-wrap">
         <table class="top-table">
-          <thead><tr><th>Rank</th><th>Server</th><th>Members</th><th>Online</th><th>24h growth</th><th>Boosts</th><th></th></tr></thead>
-          <tbody id="leaderboardRows"><tr><td colspan="7" class="empty">Loading server statistics…</td></tr></tbody>
+          <thead><tr><th>Rank</th><th>Server</th><th>Members</th><th>Online</th><th>24h growth</th><th>Boosts</th></tr></thead>
+          <tbody id="leaderboardRows"><tr><td colspan="6" class="empty">Loading server statistics…</td></tr></tbody>
         </table>
       </div>
     </section>
