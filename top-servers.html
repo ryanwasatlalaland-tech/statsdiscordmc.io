@@ -27,8 +27,7 @@
 <body>
 <div class="shell">
   <aside>
-  
-    
+   
     <nav aria-label="Primary navigation">
         <a class="active" href="./top-servers.html"><span>♛</span>Top Servers</a>
       <a href="./index.html"><span>▣</span>Minecraft Analytics</a>
@@ -50,7 +49,7 @@
       <div>
         <p class="eyebrow">Public invite comparison</p>
         <h1>Top Discord servers</h1>
-        <p>Major Discord communities ranked by their latest approximate member count.</p>
+        <p>The 10 largest communities currently shown by Discord Discovery.</p>
       </div>
       <div class="header-actions">
         <button class="secondary" id="refreshTopButton" type="button">Refresh</button>
@@ -125,6 +124,49 @@
 
     <section class="top-server-grid" id="serverCards" aria-live="polite"></section>
 
+
+    <section class="panel discovery-directory" id="discoveryDirectory">
+      <div class="panel-head discovery-head">
+        <div>
+          <p class="eyebrow">Discord directory</p>
+          <h2>Browse more servers</h2>
+          <p>Explore the rest of Discord Discovery without adding them to the main Top 10.</p>
+        </div>
+        <span id="discoveryCount">Waiting for Discovery…</span>
+      </div>
+
+      <div class="discovery-controls">
+        <label class="server-search">
+          <span>⌕</span>
+          <input id="discoverySearch" type="search" placeholder="Filter this page…" autocomplete="off">
+        </label>
+        <div class="sort-control">
+          <label for="discoverySort">Sort page</label>
+          <select id="discoverySort">
+            <option value="discovery">Discovery order</option>
+            <option value="members">Members</option>
+            <option value="online">Online</option>
+            <option value="onlineRate">Online share</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="discovery-grid" id="discoveryCards" aria-live="polite">
+        <p class="empty">Loading Discord Discovery…</p>
+      </div>
+
+      <nav class="pagination" aria-label="Discord Discovery pages">
+        <button class="secondary" id="discoveryPrevious" type="button">← Previous</button>
+        <div class="page-numbers" id="discoveryPageNumbers"></div>
+        <button class="secondary" id="discoveryNext" type="button">Next →</button>
+      </nav>
+
+      <p class="discovery-note">
+        Discord states that Discovery member totals may be up to one week old and online totals may be up to six hours old.
+      </p>
+    </section>
+
     <div class="error hidden" id="topError"></div>
     <footer>Made by RyanFol</footer>
   </main>
@@ -157,3 +199,4 @@
 
 </body>
 </html>
+
