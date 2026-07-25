@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070b09">
   <meta name="description" content="Live comparison of major Discord servers using public invite statistics.">
-  <title>Top Discord Servers ·Discord Stats</title>
+  <title>Top Discord Servers · Discord Stats</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
 <body>
 <div class="shell">
   <aside>
-    
+
     <nav aria-label="Primary navigation">
         <a class="active" href="./top-servers.html"><span>♛</span>Top Servers</a>
       <a href="./index.html"><span>▣</span>Minecraft Analytics</a>
@@ -53,6 +53,13 @@
       </div>
       <div class="header-actions">
         <button class="secondary" id="refreshTopButton" type="button">Refresh</button>
+        <div class="export-menu">
+          <button class="secondary" id="exportTopButton" type="button" aria-expanded="false">Export ▾</button>
+          <div class="export-popover hidden" id="exportTopPopover">
+            <button type="button" data-top-export="csv">Download CSV</button>
+            <button type="button" data-top-export="json">Download JSON</button>
+          </div>
+        </div>
       </div>
     </header>
 
