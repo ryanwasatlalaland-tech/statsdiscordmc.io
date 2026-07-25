@@ -13,6 +13,73 @@ let visibleServers = [];
 let chart = null;
 let comparisonMetric = "members";
 
+
+function downloadTopFile(filename, content, mimeType) {
+  const blob = new Blob([content], {type: mimeType});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvValue(value) {
+  const text = value == null ? "" : String(value);
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function exportTopServers(format) {
+  if (!payload?.servers?.length) {
+    byId("topError").textContent = "Top Server data has not loaded yet.";
+    byId("topError").classList.remove("hidden");
+    return;
+  }
+
+  const exportedAt = new Date().toISOString();
+  const servers = payload.servers.map((server, index) => ({
+    rank: index + 1,
+    name: server.name,
+    inviteCode: server.code,
+    inviteUrl: server.inviteUrl,
+    members: Number(server.members || 0),
+    online: Number(server.online || 0),
+    onlineSharePercent: Number(pct(server.online, server.members).toFixed(2)),
+    growth24h: server.growth24h ?? null,
+    boosts: Number(server.boosts || 0),
+    boostTier: Number(server.boostTier || 0),
+    activityScore: server.activityScore ?? null,
+    verification: server.verificationLabel || "Unknown",
+    verified: Boolean(server.verified),
+    community: Boolean(server.community),
+    discoverable: Boolean(server.discoverable),
+    collectedAt: server.collectedAt || payload.updatedAt || null
+  }));
+
+  const stamp = exportedAt.slice(0, 10);
+
+  if (format === "json") {
+    downloadTopFile(
+      `top-discord-servers-${stamp}.json`,
+      JSON.stringify({exportedAt, updatedAt: payload.updatedAt, servers}, null, 2),
+      "application/json;charset=utf-8"
+    );
+    return;
+  }
+
+  const headers = Object.keys(servers[0]);
+  const rows = servers.map(server => headers.map(key => csvValue(server[key])).join(","));
+  const csv = [headers.join(","), ...rows].join("\r\n");
+
+  downloadTopFile(
+    `top-discord-servers-${stamp}.csv`,
+    "\uFEFF" + csv,
+    "text/csv;charset=utf-8"
+  );
+}
+
 function applyTheme(theme, rerender = false) {
   const dark = theme !== "light";
   document.documentElement.dataset.theme = dark ? "dark" : "light";
@@ -208,7 +275,7 @@ function render(data) {
   renderHighlights(data.servers);
   byId("topUpdated").textContent = `Updated ${new Date(data.updatedAt).toLocaleString()}`;
   byId("trackerStatus").textContent = data.errors?.length ? "Tracker partially live" : "Tracker live";
-  byId("statusSmall").textContent = `${data.servers.length} of 10 servers available`;
+  byId("statusSmall").textContent = `${data.servers.length} servers available`;
   byId("statusDot").className = data.errors?.length ? "pulse warning" : "pulse";
   if(data.errors?.length){
     byId("topError").textContent = `Discord temporarily rejected some invite lookups: ${data.errors.join(" | ")}. Cached results remain visible where available.`;
@@ -242,6 +309,20 @@ async function load(force=false) {
 applyTheme(localStorage.getItem(THEME_KEY) || "dark");
 byId("themeToggle").addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark",true));
 byId("refreshTopButton").addEventListener("click",()=>load(true));
+byId("exportTopButton").addEventListener("click",event=>{
+  event.stopPropagation();
+  const popover = byId("exportTopPopover");
+  const opening = popover.classList.contains("hidden");
+  popover.classList.toggle("hidden", !opening);
+  byId("exportTopButton").setAttribute("aria-expanded", String(opening));
+});
+byId("exportTopPopover").addEventListener("click",event=>{
+  const button = event.target.closest("[data-top-export]");
+  if (!button) return;
+  exportTopServers(button.dataset.topExport);
+  byId("exportTopPopover").classList.add("hidden");
+  byId("exportTopButton").setAttribute("aria-expanded", "false");
+});
 byId("serverSearch").addEventListener("input",filterAndRender);
 byId("serverSort").addEventListener("change",filterAndRender);
 byId("comparisonButtons").addEventListener("click",event=>{
@@ -252,6 +333,10 @@ byId("comparisonButtons").addEventListener("click",event=>{
   renderChart();
 });
 document.addEventListener("click",event=>{
+  if (!event.target.closest(".export-menu")) {
+    byId("exportTopPopover")?.classList.add("hidden");
+    byId("exportTopButton")?.setAttribute("aria-expanded", "false");
+  }
   const target = event.target.closest("[data-expand],.top-server-card,tr[data-code]");
   if (target && !event.target.closest("[data-close-modal]")) openModal(target.dataset.expand || target.dataset.code);
   if (event.target.closest("[data-close-modal]")) closeModal();
@@ -263,4 +348,6 @@ document.addEventListener("keydown",event=>{
 });
 load();
 setInterval(load,60_000);
+
+
 
