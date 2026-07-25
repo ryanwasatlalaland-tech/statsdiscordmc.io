@@ -444,19 +444,23 @@ async function loadDiscovery(page = 1,force = false) {
 applyTheme(localStorage.getItem(THEME_KEY) || "dark");
 byId("themeToggle").addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark",true));
 byId("refreshTopButton").addEventListener("click",()=>load(true));
-byId("exportTopButton").addEventListener("click",event=>{
+const exportTopButton = byId("exportTopButton");
+const exportTopPopover = byId("exportTopPopover");
+
+exportTopButton?.addEventListener("click",event=>{
   event.stopPropagation();
-  const popover = byId("exportTopPopover");
-  const opening = popover.classList.contains("hidden");
-  popover.classList.toggle("hidden", !opening);
-  byId("exportTopButton").setAttribute("aria-expanded", String(opening));
+  if (!exportTopPopover) return;
+  const opening = exportTopPopover.classList.contains("hidden");
+  exportTopPopover.classList.toggle("hidden", !opening);
+  exportTopButton.setAttribute("aria-expanded", String(opening));
 });
-byId("exportTopPopover").addEventListener("click",event=>{
+
+exportTopPopover?.addEventListener("click",event=>{
   const button = event.target.closest("[data-top-export]");
   if (!button) return;
   exportTopServers(button.dataset.topExport);
-  byId("exportTopPopover").classList.add("hidden");
-  byId("exportTopButton").setAttribute("aria-expanded", "false");
+  exportTopPopover.classList.add("hidden");
+  exportTopButton?.setAttribute("aria-expanded", "false");
 });
 byId("serverSearch").addEventListener("input",filterAndRender);
 byId("serverSort").addEventListener("change",filterAndRender);
