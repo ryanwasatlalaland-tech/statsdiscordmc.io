@@ -271,6 +271,7 @@ function closeModal() {
 }
 
 function render(data) {
+  data.servers = [...(data.servers || [])].sort((a,b)=>b.members-a.members).slice(0,10);
   payload = data;
   renderHighlights(data.servers);
   byId("topUpdated").textContent = `Updated ${new Date(data.updatedAt).toLocaleString()}`;
@@ -303,6 +304,103 @@ async function load(force=false) {
     byId("topError").classList.remove("hidden");
   } finally {
     button.textContent = "Refresh";
+  }
+}
+
+
+
+let discoveryPayload = null;
+let discoveryPage = 1;
+
+function discoverySorted(servers) {
+  const mode = byId("discoverySort")?.value || "discovery";
+  const query = (byId("discoverySearch")?.value || "").trim().toLowerCase();
+  const filtered = servers.filter(server =>
+    !query ||
+    String(server.name || "").toLowerCase().includes(query) ||
+    String(server.description || "").toLowerCase().includes(query)
+  );
+
+  const copy = [...filtered];
+  if(mode === "members") copy.sort((a,b)=>b.members-a.members);
+  if(mode === "online") copy.sort((a,b)=>b.online-a.online);
+  if(mode === "onlineRate") copy.sort((a,b)=>pct(b.online,b.members)-pct(a.online,a.members));
+  if(mode === "name") copy.sort((a,b)=>a.name.localeCompare(b.name));
+  return copy;
+}
+
+function discoveryBadge(server) {
+  const badges = [];
+  if(server.verified) badges.push('<span class="mini-badge verified">✓ Verified</span>');
+  if(server.partnered) badges.push('<span class="mini-badge partnered">◆ Partnered</span>');
+  if(!badges.length) badges.push('<span class="mini-badge discoverable">⌕ Discovery</span>');
+  return badges.join("");
+}
+
+function renderDiscoveryCards() {
+  if(!discoveryPayload) return;
+  const servers = discoverySorted(discoveryPayload.servers || []);
+  byId("discoveryCards").innerHTML = servers.length ? servers.map(server => `
+    <article class="discovery-card">
+      <div class="discovery-card-banner" style="${server.bannerUrl ? `background-image:url('${server.bannerUrl}')` : ""}"></div>
+      <div class="discovery-card-content">
+        <div class="discovery-title">
+          <img src="${server.iconUrl || "./assets/favicon.svg"}" alt="">
+          <div>
+            <h3>${server.name}</h3>
+            <div class="card-badges">${discoveryBadge(server)}</div>
+          </div>
+        </div>
+        <p>${server.description || "Public Discord Discovery community."}</p>
+        <div class="discovery-stats">
+          <div><span>Members</span><strong>${fmt(server.members)}</strong></div>
+          <div><span>Online</span><strong>${fmt(server.online)}</strong></div>
+          <div><span>Online share</span><strong>${pct(server.online,server.members).toFixed(1)}%</strong></div>
+        </div>
+        <a class="secondary discovery-open" href="${server.discoveryUrl}" target="_blank" rel="noopener noreferrer">View on Discord ↗</a>
+      </div>
+    </article>
+  `).join("") : '<p class="empty">No servers on this page match your filter.</p>';
+}
+
+function renderDiscoveryPagination() {
+  const totalPages = Math.max(1,Number(discoveryPayload?.totalPages || discoveryPage + 1));
+  byId("discoveryPrevious").disabled = discoveryPage <= 1;
+  byId("discoveryNext").disabled = discoveryPage >= totalPages;
+
+  const start = Math.max(1,discoveryPage - 2);
+  const end = Math.min(totalPages,discoveryPage + 2);
+  const pages = [];
+  if(start > 1) pages.push(1);
+  if(start > 2) pages.push("…");
+  for(let page = start; page <= end; page++) pages.push(page);
+  if(end < totalPages - 1) pages.push("…");
+  if(end < totalPages) pages.push(totalPages);
+
+  byId("discoveryPageNumbers").innerHTML = pages.map(page =>
+    page === "…"
+      ? '<span class="page-gap">…</span>'
+      : `<button type="button" class="${page === discoveryPage ? "active" : ""}" data-discovery-page="${page}">${page}</button>`
+  ).join("");
+}
+
+async function loadDiscovery(page = 1,force = false) {
+  const apiBase = String(window.DISCORD_STATS_API || "").replace(/\/$/,"");
+  discoveryPage = Math.max(1,Number(page) || 1);
+  byId("discoveryCards").innerHTML = '<p class="empty">Loading Discord Discovery…</p>';
+
+  try {
+    const response = await fetch(`${apiBase}/discovery?page=${discoveryPage}${force ? "&refresh=1" : ""}&cache=${Date.now()}`,{cache:"no-store"});
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error || `Discovery returned ${response.status}`);
+    discoveryPayload = data;
+    byId("discoveryCount").textContent = data.totalResults
+      ? `${fmt(data.totalResults)} servers · page ${discoveryPage} of ${fmt(data.totalPages)}`
+      : `Page ${discoveryPage}`;
+    renderDiscoveryCards();
+    renderDiscoveryPagination();
+  } catch(error) {
+    byId("discoveryCards").innerHTML = `<p class="empty">${error.message}</p>`;
   }
 }
 
@@ -348,6 +446,4 @@ document.addEventListener("keydown",event=>{
 });
 load();
 setInterval(load,60_000);
-
-
 
