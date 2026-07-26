@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b100d">
+  <meta name="description" content="Minecraft Java and Bedrock release changelogs, automatically collected from Minecraft Feedback.">
+  <title>Minecraft Changelogs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./changelogs.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css">
+  <script>
+    try {
+      const saved = localStorage.getItem("discord-stats-theme");
+      const theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch {}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/lib/common.min.js" defer></script>
+  <script src="./config.js" defer></script>
+  <script src="./changelogs.js" defer></script>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <nav aria-label="Primary navigation">
+      <a href="./top-servers.html"><span>♛</span>Top Servers</a>
+      <a href="./index.html#overview"><span>▣</span>Minecraft Analytics</a>
+      <a class="active" href="./changelogs.html"><span>☷</span>Changelogs</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="status-card">
+        <i class="pulse" id="statusDot"></i>
+        <div><strong id="trackerStatus">Connecting</strong><small id="statusSmall">Minecraft Feedback</small></div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle colour theme" aria-pressed="true">
+        <span>Dark mode</span><i><b></b></i>
+      </button>
+    </div>
+  </aside>
+
+  <main class="changelog-main">
+    <header class="page-actions changelog-heading">
+      <div>
+        <p class="eyebrow">Official release notes</p>
+        <h1>Minecraft changelogs</h1>
+        <p>Java and Bedrock release notes collected daily from Minecraft Feedback.</p>
+      </div>
+      <a class="secondary source-button" href="https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs" target="_blank" rel="noopener noreferrer">Official source ↗</a>
+    </header>
+
+    <section class="changelog-toolbar" aria-label="Changelog controls">
+      <label class="changelog-search">
+        <span>Search changelogs</span>
+        <input id="changelogSearch" type="search" placeholder="Search releases, fixes, features or bug IDs…" autocomplete="off">
+      </label>
+      <div class="filter-row" id="editionFilters" aria-label="Edition filters">
+        <button class="active" type="button" data-edition="all">All</button>
+        <button type="button" data-edition="java">Java</button>
+        <button type="button" data-edition="bedrock">Bedrock</button>
+      </div>
+      <label class="hotfix-toggle">
+        <input id="hotfixOnly" type="checkbox">
+        <span>Hotfixes only</span>
+      </label>
+      <div class="collapse-actions">
+        <button id="expandAll" class="secondary" type="button">Expand all</button>
+        <button id="collapseAll" class="secondary" type="button">Collapse all</button>
+      </div>
+    </section>
+
+    <section class="changelog-status">
+      <div><i class="pulse" id="pageStatusDot"></i><strong id="pageStatus">Loading changelogs…</strong></div>
+      <span id="changelogMeta">Daily update</span>
+    </section>
+
+    <div class="error hidden" id="changelogError"></div>
+    <section class="changelog-list" id="changelogList" aria-live="polite">
+      <article class="changelog-skeleton"></article>
+      <article class="changelog-skeleton"></article>
+      <article class="changelog-skeleton"></article>
+    </section>
+    <p class="empty-state hidden" id="emptyState">No changelogs match those filters.</p>
+    <footer>Made by RyanFol</footer>
+  </main>
+</div>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <a href="./top-servers.html"><span>♛</span><small>Top Servers</small></a>
+  <a href="./index.html#overview"><span>▣</span><small>Analytics</small></a>
+  <a class="active" href="./changelogs.html"><span>☷</span><small>Changelogs</small></a>
+</nav>
+</body>
+</html>

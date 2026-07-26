@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070b09">
+  <meta name="description" content="Live comparison of six major Discord servers using public invite statistics.">
+  <title>Top Discord Servers · Minecraft Discord Stats</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./top-servers.css">
+  <script>
+    try {
+      const saved = localStorage.getItem("discord-stats-theme");
+      const theme = saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch {}
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.5.0/build/global/luxon.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js" defer></script>
+  <script src="./config.js" defer></script>
+  <script src="./top-servers.js" defer></script>
+</head>
+<body class="top-servers-page">
+<div class="shell">
+  <aside>
+<nav aria-label="Primary navigation">
+        <a class="active" href="./top-servers.html"><span>♛</span>Top Servers</a>
+      <a href="./index.html"><span>▣</span>Minecraft Analytics</a>
+      <a href="./changelogs.html"><span>☷</span>Changelogs</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="status-card">
+        <i class="pulse" id="statusDot"></i>
+        <div><strong id="trackerStatus">Connecting</strong><small id="statusSmall">Top server tracker</small></div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle colour theme" aria-pressed="true">
+        <span>Dark mode</span><i><b></b></i>
+      </button>
+    </div>
+  </aside>
+
+  <main>
+
+    <section class="ranking-hero">
+      <div class="ranking-hero-glow ranking-hero-glow-a"></div>
+      <div class="ranking-hero-glow ranking-hero-glow-b"></div>
+      <div class="ranking-hero-content">
+        <div>
+          <div class="ranking-live"><span></span> Live Discord Discovery</div>
+          <p class="eyebrow">Global server intelligence</p>
+          <h1>Discord Server Rankings</h1>
+          <p>Explore the largest public communities, track their momentum, and build custom comparisons.</p>
+          <div class="ranking-hero-actions">
+            <a class="blue-primary" href="#discoveryDirectory">Browse Discovery</a>
+            <button class="blue-secondary" id="heroCompareButton" type="button">Compare servers</button>
+            <button class="blue-secondary" id="refreshTopButton" type="button">Refresh stats</button>
+          </div>
+        </div>
+        <div class="ranking-hero-orbit" aria-hidden="true">
+          <div class="orbit-core">#1</div>
+          <span class="orbit-dot orbit-dot-a"></span>
+          <span class="orbit-dot orbit-dot-b"></span>
+          <span class="orbit-dot orbit-dot-c"></span>
+        </div>
+      </div>
+    </section>
+<section class="leader-highlights">
+      <article class="highlight-card crown-card">
+        <span class="highlight-icon">♛</span>
+        <div><small>Largest server</small><strong id="largestServer">—</strong><span id="largestMembers">Waiting for data</span></div>
+      </article>
+      <article class="highlight-card growth-card">
+        <span class="highlight-icon">↗</span>
+        <div><small>Fastest growing · 24h</small><strong id="fastestServer">—</strong><span id="fastestGrowth">Waiting for history</span></div>
+      </article>
+      <article class="highlight-card">
+        <span class="highlight-icon">●</span>
+        <div><small>Highest online share</small><strong id="mostActiveServer">—</strong><span id="mostActiveRate">Waiting for data</span></div>
+      </article>
+    </section>
+
+
+    <section class="featured-minecraft" id="featuredMinecraft">
+      <div class="featured-ribbon">★ Featured server</div>
+      <div class="featured-main">
+        <div class="featured-icon-wrap">
+          <div id="featuredMinecraftIcon" class="featured-icon-fallback" aria-label="Minecraft server icon">M</div>
+        </div>
+        <div class="featured-copy">
+          <p class="eyebrow">Live invite data</p>
+          <div class="featured-title-row">
+            <h2 id="featuredMinecraftName">Minecraft</h2>
+            <span class="mini-badge featured">Creeper featured</span>
+          </div>
+          <p id="featuredMinecraftDescription">The official Minecraft Discord community.</p>
+        </div>
+        <div class="featured-stats">
+          <div><span>Members</span><strong id="featuredMinecraftMembers">—</strong></div>
+          <div><span>Online</span><strong id="featuredMinecraftOnline">—</strong></div>
+          <div><span>Online share</span><strong id="featuredMinecraftRate">—</strong></div>
+        </div>
+        <div class="featured-actions">
+          <a id="featuredMinecraftLink" class="invite-button" href="https://discord.gg/minecraft" target="_blank" rel="noopener noreferrer">Open Minecraft Discord ↗</a>
+          <button id="compareFeaturedMinecraft" class="featured-compare-button" type="button">+ Compare Minecraft</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="top-toolbar">
+      <label class="server-search">
+        <span>⌕</span>
+        <input id="serverSearch" type="search" placeholder="Search the servers…" autocomplete="off">
+      </label>
+      <div class="sort-control">
+        <label for="serverSort">Sort</label>
+        <select id="serverSort">
+          <option value="members">Members</option>
+          <option value="growth">24h growth</option>
+          <option value="online">Online</option>
+          <option value="onlineRate">Online share</option>
+          <option value="boosts">Boosts</option>
+          <option value="activity">Activity</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="trend-guide panel">
+      <div>
+        <p class="eyebrow">Momentum signals</p>
+        <h2>Understand each server at a glance</h2>
+      </div>
+      <div class="trend-guide-items">
+        <span><b class="trend-dot growing"></b>Growing</span>
+        <span><b class="trend-dot stable"></b>Stable</span>
+        <span><b class="trend-dot declining"></b>Declining</span>
+        <span><b class="trend-dot new"></b>New history</span>
+      </div>
+    </section>
+
+    <section class="panel leaderboard-panel">
+      <div class="panel-head">
+        <div><h2>Live leaderboard</h2><p>Live statistics for the current Top 10 servers.</p></div>
+        <span id="topUpdated">Waiting for data…</span>
+      </div>
+      <div class="top-table-wrap">
+        <table class="top-table">
+          <thead><tr><th>Rank</th><th>Server</th><th>Members</th><th>Online</th><th>24h growth</th><th>Boosts</th></tr></thead>
+          <tbody id="leaderboardRows"><tr><td colspan="6" class="empty">Loading server statistics…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <section class="compare-studio panel" id="compareStudio">
+      <div class="compare-studio-head">
+        <div>
+          <p class="eyebrow">Comparison studio</p>
+          <h2>Build a server comparison</h2>
+          <p>Choose up to four servers and compare the metric that matters to you.</p>
+        </div>
+        <button class="compare-launch" id="openCompareButton" type="button">Choose servers</button>
+      </div>
+
+      <div class="compare-selection-summary" id="compareSelectionSummary">
+        <span>No servers selected yet</span>
+      </div>
+
+      <div class="compare-result-grid" id="compareResultGrid">
+        <article><span>Best performer</span><strong id="compareWinner">—</strong><small id="compareWinnerNote">Choose servers to begin</small></article>
+        <article><span>Largest gap</span><strong id="compareGap">—</strong><small id="compareGapNote">Waiting for a comparison</small></article>
+        <article><span>Selected metric</span><strong id="compareMetricLabel">Members</strong><small>Change this in the comparison drawer</small></article>
+      </div>
+
+      <div class="compare-view-toolbar">
+        <div class="comparison-buttons" id="compareViewButtons">
+          <button class="active" type="button" data-view="bar">Bars</button>
+          <button type="button" data-view="radar">Radar</button>
+          <button type="button" data-view="table">Stat table</button>
+        </div>
+        <button class="blue-secondary export-comparison" id="exportComparisonButton" type="button">Export PNG</button>
+      </div>
+
+      <div class="chart-wrap compare-chart-wrap" id="customCompareChartWrap">
+        <canvas id="customCompareChart"></canvas>
+      </div>
+
+      <div class="comparison-stat-table hidden" id="comparisonStatTable"></div>
+    </section>
+
+    <div class="compare-drawer hidden" id="compareDrawer" role="dialog" aria-modal="true" aria-labelledby="compareDrawerTitle">
+      <button class="compare-backdrop" type="button" id="closeCompareBackdrop" aria-label="Close comparison"></button>
+      <section class="compare-drawer-panel">
+        <div class="compare-drawer-head">
+          <div>
+            <p class="eyebrow">Custom comparison</p>
+            <h2 id="compareDrawerTitle">Choose what to compare</h2>
+          </div>
+          <button class="icon-button" id="closeCompareButton" type="button" aria-label="Close">×</button>
+        </div>
+
+        <label class="compare-field">
+          <span>Metric</span>
+          <select id="customCompareMetric">
+            <option value="members">Members</option>
+            <option value="online">Online</option>
+            <option value="onlineRate">Online share</option>
+            <option value="growth24h">24-hour growth</option>
+            <option value="boosts">Boosts</option>
+            <option value="activityScore">Activity score</option>
+          </select>
+        </label>
+
+        <div class="compare-server-picker" id="compareServerPicker"></div>
+
+        <div class="compare-drawer-actions">
+          <button class="secondary" id="clearCompareButton" type="button">Clear</button>
+          <button class="invite-button" id="applyCompareButton" type="button">Compare selected</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel comparison-panel">
+      <div class="panel-head">
+        <div><h2>Server comparison</h2><p>Compare the currently visible servers.</p></div>
+        <div class="comparison-buttons" id="comparisonButtons">
+          <button class="active" data-metric="members">Members</button>
+          <button data-metric="online">Online</button>
+          <button data-metric="growth24h">Growth</button>
+          <button data-metric="boosts">Boosts</button>
+        </div>
+      </div>
+      <div class="chart-wrap large"><canvas id="topServersChart"></canvas></div>
+    </section>
+
+
+
+    <section class="panel discovery-directory" id="discoveryDirectory">
+      <div class="panel-head discovery-head">
+        <div>
+          <p class="eyebrow">Discord directory</p>
+          <h2>Browse more servers</h2>
+          <p>Explore the rest of Discord Discovery without adding them to the main Top 10.</p>
+        </div>
+        <span id="discoveryCount">Waiting for Discovery…</span>
+      </div>
+
+      <div class="discovery-controls">
+        <label class="server-search">
+          <span>⌕</span>
+          <input id="discoverySearch" type="search" placeholder="Filter this page…" autocomplete="off">
+        </label>
+        <div class="sort-control">
+          <label for="discoverySort">Sort page</label>
+          <select id="discoverySort">
+            <option value="discovery">Discovery order</option>
+            <option value="members">Members</option>
+            <option value="online">Online</option>
+            <option value="onlineRate">Online share</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="discovery-grid" id="discoveryCards" aria-live="polite">
+        <p class="empty">Loading Discord Discovery…</p>
+      </div>
+
+      <nav class="pagination" aria-label="Discord Discovery pages">
+        <button class="secondary" id="discoveryPrevious" type="button">← Previous</button>
+        <div class="page-numbers" id="discoveryPageNumbers"></div>
+        <button class="secondary" id="discoveryNext" type="button">Next →</button>
+      </nav>
+
+      <p class="discovery-note">
+        Discord states that Discovery member totals may be up to one week old and online totals may be up to six hours old.
+      </p>
+    </section>
+
+    <div class="error hidden" id="topError"></div>
+    <footer>Made by RyanFol</footer>
+  </main>
+</div>
+
+<div class="server-modal hidden" id="serverModal" role="dialog" aria-modal="true" aria-labelledby="modalServerName">
+  <button class="modal-backdrop" type="button" data-close-modal aria-label="Close server details"></button>
+  <article class="server-modal-card">
+    <button class="modal-close" type="button" data-close-modal aria-label="Close">×</button>
+    <div class="modal-banner" id="modalBanner"></div>
+    <div class="modal-content">
+      <div class="modal-title-row">
+        <img id="modalIcon" alt="">
+        <div><p class="eyebrow">Expanded server profile</p><h2 id="modalServerName">Server</h2><div class="modal-badges" id="modalBadges"></div></div>
+      </div>
+      <p class="modal-description" id="modalDescription"></p>
+      <section class="modal-stat-grid" id="modalStats"></section>
+      <section class="modal-details" id="modalDetails"></section>
+      <section class="modal-history">
+        <div class="modal-history-head">
+          <div><h3>Server history</h3><p id="modalHistoryStatus">Loading stored history…</p></div>
+          <div class="modal-history-ranges" id="modalHistoryRanges">
+            <button type="button" data-history-range="24h">24h</button>
+            <button type="button" data-history-range="7d" class="active">7d</button>
+            <button type="button" data-history-range="30d">30d</button>
+          </div>
+        </div>
+        <div class="modal-history-chart"><canvas id="modalHistoryChart"></canvas></div>
+      </section>
+      <a class="invite-button modal-invite" id="modalInvite" target="_blank" rel="noopener noreferrer">Open Discord invite ↗</a>
+    </div>
+  </article>
+</div>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+   <a class="active" href="./top-servers.html"><span>♛</span><small>Top Servers</small></a>
+  <a href="./index.html"><span>▣</span><small>Minecraft</small></a>
+    <a href="./index.html#members"><span>↗</span><small>Growth</small></a>
+  <a href="./index.html#activity"><span>ϟ</span><small>Activity</small></a>
+</nav>
+
+
+    <div class="sticky-compare-bar hidden" id="stickyCompareBar">
+      <div class="sticky-compare-meta">
+        <span class="sticky-compare-kicker">Comparison queue</span>
+        <div id="stickyCompareServers"></div>
+      </div>
+      <label>
+        <span>Metric</span>
+        <select id="stickyCompareMetric">
+          <option value="members">Members</option>
+          <option value="online">Online</option>
+          <option value="onlineRate">Online share</option>
+          <option value="growth24h">24-hour growth</option>
+          <option value="boosts">Boosts</option>
+          <option value="activityScore">Activity score</option>
+        </select>
+      </label>
+      <button class="blue-primary" id="stickyCompareRun" type="button">Compare</button>
+      <button class="sticky-compare-clear" id="stickyCompareClear" type="button" aria-label="Clear comparison">×</button>
+    </div>
+
+</body>
+</html>
