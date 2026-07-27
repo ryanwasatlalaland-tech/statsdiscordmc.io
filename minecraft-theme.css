@@ -1,0 +1,323 @@
+
+/* =========================================================
+   BLOCKPULSE MINECRAFT UI — applies only to Minecraft pages
+   ========================================================= */
+.minecraft-page{
+  --mc-sky:#68a8e4;
+  --mc-sky-deep:#316eae;
+  --mc-grass:#65a83f;
+  --mc-grass-dark:#315d24;
+  --mc-dirt:#76543a;
+  --mc-stone:#5a6064;
+  --mc-deepslate:#20272a;
+  --mc-deepslate-2:#151b1d;
+  --mc-wood:#8d623d;
+  --mc-wood-dark:#4c3322;
+  --mc-gold:#f4c84f;
+  --mc-emerald:#35c46a;
+  --mc-diamond:#43d8e8;
+  --mc-redstone:#e4483f;
+  --mc-lapis:#376ed0;
+  --mc-amethyst:#9d63d8;
+  --mc-copper:#c87a49;
+  --mc-paper:#e8d6a9;
+  --mc-ink:#30281d;
+  background:
+    linear-gradient(rgba(7,12,13,.78),rgba(7,12,13,.94)),
+    repeating-linear-gradient(0deg,transparent 0 31px,rgba(255,255,255,.018) 31px 32px),
+    repeating-linear-gradient(90deg,transparent 0 31px,rgba(255,255,255,.018) 31px 32px),
+    #101719;
+}
+.minecraft-page::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle at 80% 8%,rgba(74,145,202,.16),transparent 31%),
+    radial-gradient(circle at 30% 88%,rgba(62,120,45,.10),transparent 34%);
+}
+.minecraft-page h1,.minecraft-page h2,.minecraft-page h3,
+.minecraft-page .minecraft-brand strong{
+  font-family:Manrope,system-ui,sans-serif;
+  letter-spacing:-.045em;
+}
+.minecraft-page .shell>aside{
+  border-right:0;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.025),transparent),
+    repeating-linear-gradient(0deg,#1d2528 0 31px,#151c1f 31px 32px);
+  box-shadow:inset -4px 0 #0a0e10,inset -6px 0 rgba(255,255,255,.035),12px 0 35px rgba(0,0,0,.28);
+}
+.minecraft-brand{
+  display:flex;align-items:center;gap:12px;margin:2px 5px 23px;padding:13px 12px;
+  border:2px solid #0c1113;background:#222c30;
+  box-shadow:inset 0 2px rgba(255,255,255,.06),inset 0 -3px rgba(0,0,0,.35),0 4px 0 #0a0e10;
+}
+.minecraft-brand strong{display:block;color:#f4f7ef;font-size:15px;letter-spacing:.08em;text-shadow:0 2px #000}
+.minecraft-brand small{display:block;margin-top:2px;color:#9da9a4;font-size:9px;text-transform:uppercase;letter-spacing:.13em}
+.brand-cube{
+  position:relative;display:block;width:38px;height:38px;flex:0 0 38px;
+  background:linear-gradient(#6fae42 0 28%,#755238 28%);
+  border:2px solid #111;box-shadow:inset 0 3px rgba(255,255,255,.16),inset 0 -4px rgba(0,0,0,.24),3px 3px 0 #0a0d0e;
+}
+.brand-cube::before,.brand-cube::after,.brand-cube i::before,.brand-cube i::after{
+  content:"";position:absolute;width:6px;height:6px;background:rgba(31,67,21,.45)
+}
+.brand-cube::before{left:4px;top:3px}.brand-cube::after{right:5px;top:7px}
+.brand-cube i::before{left:8px;bottom:7px;background:rgba(59,37,24,.35)}
+.brand-cube i::after{right:3px;bottom:3px;background:rgba(59,37,24,.42)}
+.minecraft-nav{display:grid!important;gap:8px!important}
+.minecraft-nav a{
+  position:relative;min-height:48px!important;padding:8px 10px!important;
+  border:2px solid transparent!important;border-radius:0!important;
+  background:rgba(7,11,12,.24)!important;color:#aeb8b3!important;
+  font-weight:800!important;box-shadow:none!important;
+}
+.minecraft-nav a:hover{
+  color:white!important;background:#293438!important;border-color:#101517!important;
+  transform:translateX(3px);
+}
+.minecraft-nav a.active{
+  color:#fff!important;background:linear-gradient(180deg,#436d32,#315323)!important;
+  border-color:#172316!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.14),inset 0 -4px rgba(0,0,0,.30),3px 3px 0 #0b100d!important;
+}
+.nav-block{
+  display:grid!important;place-items:center;width:30px!important;height:30px!important;min-width:30px!important;
+  border:2px solid #111!important;border-radius:0!important;color:white!important;text-shadow:0 2px #000;
+  box-shadow:inset 0 2px rgba(255,255,255,.13),inset 0 -3px rgba(0,0,0,.30);
+}
+.grass-block{background:linear-gradient(#65a83f 0 28%,#76543a 28%)!important}
+.book-block{background:linear-gradient(90deg,#a23f35 0 20%,#6e241e 20% 25%,#a23f35 25%)!important}
+.discord-block{background:#5865f2!important}
+.minecraft-page .status-card,.minecraft-page .theme-toggle{
+  border-radius:0!important;border:2px solid #0b1012!important;background:#222b2e!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.05),inset 0 -3px rgba(0,0,0,.26),2px 2px 0 #080c0d;
+}
+.minecraft-page main{position:relative}
+.minecraft-page main::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:265px;z-index:-1;opacity:.25;
+  background:
+    linear-gradient(180deg,rgba(82,154,215,.72),rgba(83,133,172,.2) 55%,transparent),
+    linear-gradient(135deg,transparent 45%,rgba(21,54,31,.65) 46% 54%,transparent 55%) 0 115px/230px 150px repeat-x;
+  mask-image:linear-gradient(#000,transparent);
+}
+.minecraft-page .page-actions h1{
+  color:#fff;text-shadow:0 3px 0 #111,0 5px 14px rgba(0,0,0,.55);
+  font-size:clamp(34px,5.4vw,66px);line-height:.98;max-width:790px;
+}
+.minecraft-page .title-small{
+  display:block;margin-bottom:8px;color:#7ac75a;font-size:.27em;line-height:1;
+  letter-spacing:.18em;text-transform:uppercase;text-shadow:0 2px #14220f;
+}
+.minecraft-kicker{display:flex;align-items:center;gap:8px;color:#b7c6bd!important}
+.minecraft-kicker span{display:block;width:10px;height:10px;background:#6ad44b;border:2px solid #172b11;box-shadow:0 0 12px rgba(106,212,75,.5)}
+.mc-button,.minecraft-page button.secondary{
+  border-radius:0!important;border:2px solid #121718!important;background:#3a4649!important;color:#f6f7f4!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.09),inset 0 -4px rgba(0,0,0,.30),3px 3px 0 #090d0e!important;
+  font-weight:900!important;text-shadow:0 2px rgba(0,0,0,.7);
+}
+.mc-button:hover,.minecraft-page button.secondary:hover{transform:translate(-1px,-1px);filter:brightness(1.12)}
+.mc-button:active,.minecraft-page button.secondary:active{transform:translate(2px,2px);box-shadow:inset 0 2px rgba(0,0,0,.3)!important}
+.minecraft-world-card{
+  position:relative;overflow:hidden;border-radius:0!important;border:3px solid #101719!important;
+  background:
+    linear-gradient(180deg,rgba(69,143,203,.9) 0 53%,rgba(113,157,80,.4) 54%,rgba(35,60,31,.9) 75%),
+    #3e89c3!important;
+  box-shadow:inset 0 4px rgba(255,255,255,.11),inset 0 -6px rgba(0,0,0,.25),6px 7px 0 #080d0e!important;
+}
+.minecraft-world-card::before{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:42%;
+  background:
+    linear-gradient(135deg,transparent 45%,#31562b 46% 55%,transparent 56%) 0 10px/170px 100px repeat-x,
+    linear-gradient(180deg,transparent,#17241a);
+  opacity:.94;
+}
+.minecraft-world-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 31px,rgba(255,255,255,.022) 31px 32px);
+}
+.world-cloud{position:absolute;z-index:0;height:18px;background:rgba(255,255,255,.64);filter:drop-shadow(0 4px rgba(35,72,104,.22))}
+.world-cloud::before,.world-cloud::after{content:"";position:absolute;background:inherit}
+.world-cloud::before{width:38px;height:16px;left:16px;top:-10px}
+.world-cloud::after{width:29px;height:12px;right:12px;top:-7px}
+.cloud-one{width:95px;right:11%;top:24px}
+.cloud-two{width:70px;left:42%;top:63px;opacity:.55}
+.minecraft-world-card .server-banner{opacity:.34;filter:saturate(.8) contrast(1.1)}
+.minecraft-world-card .server-hero-content{position:relative;z-index:2}
+.minecraft-world-card .server-icon,.minecraft-world-card .server-icon-fallback{
+  border-radius:0!important;border:3px solid #111!important;box-shadow:inset 0 3px rgba(255,255,255,.15),4px 4px 0 rgba(0,0,0,.65)!important;
+}
+.minecraft-world-card .server-identity h2{color:white;text-shadow:0 3px #111}
+.minecraft-world-card .server-identity p,.minecraft-world-card .hero-counts span{color:rgba(255,255,255,.78)}
+.minecraft-world-card .hero-counts>div{
+  border-radius:0!important;border:2px solid rgba(13,23,24,.75)!important;background:rgba(15,25,25,.72)!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.07),inset 0 -3px rgba(0,0,0,.28)
+}
+.minecraft-world-card .invite-button{
+  border-radius:0!important;background:#4f9139!important;border:2px solid #172b12!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.13),inset 0 -4px rgba(0,0,0,.28),3px 3px 0 #0c120b!important;
+}
+.minecraft-page .status-banner,.minecraft-page .range-bar{
+  border-radius:0!important;border:2px solid #101617!important;background:#222c2f!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.04),inset 0 -3px rgba(0,0,0,.28),3px 3px 0 #090d0e;
+}
+.minecraft-page .range-buttons button{
+  border-radius:0!important;border:1px solid #111!important;background:#313b3e!important;color:#aab4b0!important
+}
+.minecraft-page .range-buttons button.active{
+  background:#4f853a!important;color:#fff!important;box-shadow:inset 0 2px rgba(255,255,255,.10),inset 0 -3px rgba(0,0,0,.28)
+}
+.minecraft-page .stats{gap:13px}
+.minecraft-page .block-card{
+  position:relative;overflow:hidden;border-radius:0!important;border:2px solid #101516!important;
+  background:#313a3c!important;box-shadow:inset 0 3px rgba(255,255,255,.06),inset 0 -5px rgba(0,0,0,.22),4px 5px 0 #090d0e!important;
+  transition:transform .16s,filter .16s;
+}
+.minecraft-page .block-card::before{
+  content:"";position:absolute;inset:0;opacity:.22;pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent 48%,rgba(255,255,255,.10) 49% 51%,transparent 52%),
+    linear-gradient(0deg,transparent 48%,rgba(0,0,0,.15) 49% 51%,transparent 52%);
+  background-size:24px 24px;
+}
+.minecraft-page .block-card:hover{transform:translateY(-4px);filter:brightness(1.08)}
+.minecraft-page .block-card strong{position:relative;color:white;text-shadow:0 3px rgba(0,0,0,.72)}
+.minecraft-page .block-card .stat-icon{
+  border-radius:0!important;border:1px solid rgba(0,0,0,.45)!important;background:rgba(0,0,0,.18)!important
+}
+.grass-stat{background:linear-gradient(#589736 0 22%,#6e5038 22%)!important}
+.emerald-stat{background:linear-gradient(135deg,#187347,#2ab765)!important}
+.diamond-stat{background:linear-gradient(135deg,#1a8b9c,#39c6d7)!important}
+.lapis-stat{background:linear-gradient(135deg,#1d438f,#3669c3)!important}
+.amethyst-stat{background:linear-gradient(135deg,#5d3284,#9860c6)!important}
+.copper-stat{background:linear-gradient(135deg,#82482e,#c27044)!important}
+.beacon-stat{background:linear-gradient(135deg,#446e79,#7bc6d7)!important}
+.redstone-stat{background:linear-gradient(135deg,#6f2525,#c83b35)!important}
+.chest-stat{background:linear-gradient(#9c6b3f 0 46%,#39281c 46% 55%,#815834 55%)!important}
+.minecraft-page .panel{
+  border-radius:0!important;border:3px solid #111719!important;background:#252e30!important;
+  box-shadow:inset 0 3px rgba(255,255,255,.045),inset 0 -5px rgba(0,0,0,.23),5px 6px 0 #080c0d!important;
+}
+.minecraft-page .panel-head{border-bottom-color:rgba(255,255,255,.07)}
+.minecraft-page .panel-head h2{color:#f0f3ed;text-shadow:0 2px #000}
+.minecraft-page .map-panel{
+  border-color:#3d2c1e!important;
+  background:
+    linear-gradient(rgba(232,214,169,.94),rgba(219,197,148,.94)),
+    repeating-linear-gradient(45deg,rgba(73,56,33,.06) 0 2px,transparent 2px 5px)!important;
+  box-shadow:inset 0 0 0 7px #7f5838,inset 0 0 0 10px #3e291b,5px 6px 0 #080c0d!important;
+  padding:27px!important;color:var(--mc-ink)!important;
+}
+.minecraft-page .map-panel h2,.minecraft-page .map-panel .panel-head h2{color:#352b1f!important;text-shadow:none}
+.minecraft-page .map-panel p,.minecraft-page .map-panel .heat-key{color:#665a47!important}
+.minecraft-page .inventory-panel{
+  background:
+    linear-gradient(rgba(35,45,47,.96),rgba(29,37,39,.96)),
+    repeating-linear-gradient(0deg,transparent 0 47px,rgba(255,255,255,.035) 47px 49px)!important;
+}
+.minecraft-page .furnace-panel::after{
+  content:"";display:block;width:44px;height:8px;margin:17px auto 0;background:#ef9d38;
+  box-shadow:0 -7px 13px rgba(239,112,43,.6),inset 0 -3px #a84224;
+}
+.minecraft-page .chest-panel{background:linear-gradient(180deg,#72503a,#493423)!important}
+.minecraft-page .book-panel{
+  background:linear-gradient(90deg,#7d2f29 0 4%,#d8c58f 4% 49.5%,#8e774e 49.5% 50.5%,#d8c58f 50.5% 96%,#7d2f29 96%)!important;
+  color:#332a1e!important
+}
+.minecraft-page .book-panel h2,.minecraft-page .book-panel p,.minecraft-page .book-panel th,.minecraft-page .book-panel td{color:#332a1e!important}
+.minecraft-page .book-panel table{background:rgba(255,255,255,.12)}
+.minecraft-page .book-panel th,.minecraft-page .book-panel td{border-color:rgba(68,51,29,.22)!important}
+.minecraft-page .metric-pill{
+  border-radius:0!important;background:#537e35!important;border:2px solid #24361b!important;color:white!important
+}
+.minecraft-mobile-nav{
+  background:#1b2325!important;border-top:3px solid #090d0e!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.04)!important
+}
+.minecraft-mobile-nav a{border-radius:0!important}
+.minecraft-mobile-nav a.active{background:#3c682d!important;color:white!important;box-shadow:inset 0 3px rgba(255,255,255,.08)}
+.minecraft-page footer{color:#77827d}
+
+/* Changelog library treatment */
+.changelog-page .changelog-toolbar{
+  border-radius:0!important;border:3px solid #17130d!important;
+  background:linear-gradient(180deg,#4c3424,#342419)!important;
+  box-shadow:inset 0 3px rgba(255,255,255,.07),inset 0 -5px rgba(0,0,0,.25),5px 6px 0 #080c0d!important
+}
+.changelog-page .changelog-search input,
+.changelog-page .filter-row button,
+.changelog-page .hotfix-toggle{
+  border-radius:0!important;border:2px solid #15110c!important;
+  background:#e1cfa0!important;color:#32291d!important;
+  box-shadow:inset 0 2px rgba(255,255,255,.22),inset 0 -3px rgba(80,58,31,.18)
+}
+.changelog-page .filter-row button.active{background:#52863b!important;color:white!important}
+.changelog-page .changelog-card{
+  position:relative;border-radius:0!important;border:3px solid #17120e!important;
+  background:linear-gradient(90deg,#8d382f 0 20px,#5e211c 20px 26px,#c7ad72 26px)!important;
+  box-shadow:inset 0 3px rgba(255,255,255,.06),inset 0 -5px rgba(0,0,0,.18),5px 6px 0 #090d0e!important;
+}
+.changelog-page .changelog-card::before{
+  content:"";position:absolute;left:8px;top:12px;bottom:12px;width:5px;
+  background:repeating-linear-gradient(#dbb95e 0 6px,#51301c 6px 10px)
+}
+.changelog-page .changelog-card>summary{padding-left:47px!important}
+.changelog-page .changelog-card h2{color:#33291c;text-shadow:0 1px rgba(255,255,255,.32)}
+.changelog-page .changelog-card summary p,.changelog-page .changelog-summary-meta{color:#6a5a3f!important}
+.changelog-page .changelog-body-wrap{
+  margin-left:26px;border-top:2px solid rgba(77,54,28,.27)!important;
+  background:
+    linear-gradient(90deg,#ddc78f 0 49.5%,#b99d67 49.5% 50.5%,#ddc78f 50.5%)!important;
+  color:#342a1e!important
+}
+.changelog-page .changelog-body{color:#342a1e!important}
+.changelog-page .changelog-body h1,.changelog-page .changelog-body h2,.changelog-page .changelog-body h3{color:#302518!important}
+.changelog-page .changelog-body a{color:#27669d!important}
+.changelog-page .changelog-body pre{border-radius:0!important;border:3px solid #31261b!important}
+.changelog-page .changelog-body img{border-radius:0!important;border:3px solid #4c3823!important;box-shadow:4px 4px 0 rgba(61,42,24,.3)}
+.changelog-page .edition-badge,.changelog-page .hotfix-badge{border-radius:0!important}
+.changelog-page .changelog-status{border-radius:0!important;border:2px solid #101617!important;background:#222c2f!important}
+.changelog-page .chevron{border-radius:0!important;background:#795a33;color:white;border:2px solid #322416!important}
+.changelog-page .article-footer{border-top-color:rgba(66,48,27,.28)!important;color:#68583e!important}
+
+html[data-theme="light"] .minecraft-page{
+  background:
+    linear-gradient(rgba(230,238,226,.90),rgba(225,232,221,.96)),
+    repeating-linear-gradient(0deg,transparent 0 31px,rgba(40,65,38,.04) 31px 32px),
+    repeating-linear-gradient(90deg,transparent 0 31px,rgba(40,65,38,.04) 31px 32px),
+    #e6eee1;
+}
+html[data-theme="light"] .minecraft-page .shell>aside{
+  background:repeating-linear-gradient(0deg,#d7ddd4 0 31px,#c8d0c5 31px 32px);
+}
+html[data-theme="light"] .minecraft-page .minecraft-brand,
+html[data-theme="light"] .minecraft-page .status-card,
+html[data-theme="light"] .minecraft-page .theme-toggle{background:#eef3eb!important}
+html[data-theme="light"] .minecraft-brand strong{color:#263128;text-shadow:none}
+html[data-theme="light"] .minecraft-brand small{color:#607064}
+html[data-theme="light"] .minecraft-nav a{color:#526158!important}
+html[data-theme="light"] .minecraft-nav a:hover{background:#d7dfd4!important;color:#1f2b22!important}
+html[data-theme="light"] .minecraft-page .page-actions h1{color:#203022;text-shadow:0 2px rgba(255,255,255,.6)}
+html[data-theme="light"] .minecraft-page .title-small{color:#427b30;text-shadow:none}
+
+@media(max-width:920px){
+  .minecraft-brand{display:none}
+  .minecraft-page .shell>aside{box-shadow:none}
+}
+@media(max-width:760px){
+  .minecraft-page main::before{height:195px}
+  .minecraft-page .page-actions h1{font-size:clamp(35px,11vw,52px)}
+  .minecraft-world-card{box-shadow:inset 0 4px rgba(255,255,255,.11),inset 0 -6px rgba(0,0,0,.25),3px 4px 0 #080d0e!important}
+  .minecraft-page .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .minecraft-page .map-panel{padding:20px!important}
+}
+@media(max-width:500px){
+  .minecraft-page .stats{grid-template-columns:1fr!important}
+  .minecraft-page .page-actions h1{font-size:38px}
+  .minecraft-page .block-card{min-height:132px}
+  .changelog-page .changelog-card>summary{padding-left:40px!important}
+  .changelog-page .changelog-body-wrap{margin-left:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .minecraft-page *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
