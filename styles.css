@@ -2,7 +2,7 @@
 :root{
   color-scheme:dark;
   --bg:#070a08;--surface:#0d120f;--panel:#111813;--panel-2:#172019;--panel-3:#1d2921;
-  --text:#f3f8f4;--muted:#8d9b91;--line:rgba(255,255,255,.085);
+  --text:#f3f8f4;--muted:#1e1f1e;--line:rgba(255,255,255,.085);
   --green:#65e57b;--green-deep:#29954a;--lime:#b7f56b;--blue:#68b9ff;--purple:#ad92ff;
   --red:#ff7075;--amber:#ffc75c;--shadow:0 24px 70px rgba(0,0,0,.30);
 }
