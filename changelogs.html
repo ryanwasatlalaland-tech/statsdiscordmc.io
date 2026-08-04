@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b100d">
-  <meta name="description" content="Minecraft Java and Bedrock release changelogs, automatically collected from Minecraft Feedback.">
+  <meta name="description" content="Minecraft releases, Java snapshots, and Bedrock Beta & Preview changelogs collected from Minecraft Feedback.">
   <title>Minecraft Changelogs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +31,7 @@
   <aside class="unified-sidebar">
     <div class="minecraft-brand" aria-label="BlockPulse">
       <span class="brand-cube" aria-hidden="true"><i></i></span>
-      <div><strong>Minecraft</strong><small>Changelogs for Java/Bedrock</small></div>
+      <div><strong>BLOCKPULSE</strong><small>Community intelligence</small></div>
     </div>
     <nav aria-label="Primary navigation" class="minecraft-nav unified-nav">
       <a href="./top-servers.html"><span class="nav-block diamond-nav-block">◆</span>Top Servers</a>
@@ -54,9 +54,12 @@
       <div>
         <p class="eyebrow minecraft-kicker"><span></span>Official release archive</p>
         <h1><span class="title-small">The Library</span> Minecraft Changelogs</h1>
-        <p>Open the archive and browse Java and Bedrock release notes as collectible update books.</p>
+        <p>Browse stable releases, Java snapshots, and Bedrock Beta & Preview notes as collectible update books.</p>
       </div>
-      <a class="secondary source-button mc-button" href="https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs" target="_blank" rel="noopener noreferrer">Official source ↗</a>
+      <div class="source-links">
+        <a class="secondary source-button mc-button" href="https://feedback.minecraft.net/hc/en-us/sections/360001186971-Release-Changelogs" target="_blank" rel="noopener noreferrer">Release source ↗</a>
+        <a class="secondary source-button mc-button" href="https://feedback.minecraft.net/hc/en-us/sections/360001185332-Beta-and-Preview-Information-and-Changelogs" target="_blank" rel="noopener noreferrer">Beta & Preview source ↗</a>
+      </div>
     </header>
 
     <section class="changelog-toolbar" aria-label="Changelog controls">
@@ -64,10 +67,22 @@
         <span>Search changelogs</span>
         <input id="changelogSearch" type="search" placeholder="Search releases, fixes, features or bug IDs…" autocomplete="off">
       </label>
-      <div class="filter-row" id="editionFilters" aria-label="Edition filters">
-        <button class="active" type="button" data-edition="all">All</button>
-        <button type="button" data-edition="java">Java</button>
-        <button type="button" data-edition="bedrock">Bedrock</button>
+      <div class="filter-stack">
+        <span class="filter-label">Update type</span>
+        <div class="filter-row update-type-filters" id="trackFilters" aria-label="Update type filters">
+          <button class="active" type="button" data-track="all">All updates</button>
+          <button type="button" data-track="release">Releases</button>
+          <button type="button" data-track="beta_preview">Beta / Preview</button>
+          <button type="button" data-track="snapshot">Snapshots</button>
+        </div>
+      </div>
+      <div class="filter-stack">
+        <span class="filter-label">Edition</span>
+        <div class="filter-row" id="editionFilters" aria-label="Edition filters">
+          <button class="active" type="button" data-edition="all">All</button>
+          <button type="button" data-edition="java">Java</button>
+          <button type="button" data-edition="bedrock">Bedrock</button>
+        </div>
       </div>
       <label class="hotfix-toggle">
         <input id="hotfixOnly" type="checkbox">

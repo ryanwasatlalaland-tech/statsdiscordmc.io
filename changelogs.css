@@ -139,3 +139,92 @@ html[data-theme="light"] .changelog-body pre{background:#f6f8fa;color:#24292f}
   .changelog-status{align-items:flex-start;flex-direction:column}
   .changelog-body{font-size:14px}
 }
+
+
+/* Beta / Preview and Snapshot update filters */
+.source-links{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.filter-stack{
+  display:grid;
+  gap:7px;
+}
+.filter-label{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.update-type-filters{
+  flex-wrap:wrap;
+}
+.track-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:4px 9px;
+  border:2px solid;
+  border-radius:0;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.track-badge.release{
+  border-color:#6e5736;
+  background:#9f804e;
+  color:#fff8e8;
+}
+.track-badge.beta-preview{
+  border-color:#315160;
+  background:#4c8fa6;
+  color:#ffffff;
+}
+.track-badge.snapshot{
+  border-color:#573370;
+  background:#8e53b5;
+  color:#ffffff;
+}
+
+/* Beta/Preview books get a blue-spined cover; snapshots get purple. */
+.changelog-card[data-track="beta_preview"]{
+  background:linear-gradient(90deg,#315f74 0 20px,#23414f 20px 26px,#c7ad72 26px)!important;
+}
+.changelog-card[data-track="snapshot"]{
+  background:linear-gradient(90deg,#6f3b83 0 20px,#482454 20px 26px,#c7ad72 26px)!important;
+}
+.changelog-card[data-track="beta_preview"]::before{
+  background:repeating-linear-gradient(#78d3e4 0 6px,#23414f 6px 10px)!important;
+}
+.changelog-card[data-track="snapshot"]::before{
+  background:repeating-linear-gradient(#d09aee 0 6px,#482454 6px 10px)!important;
+}
+
+@media(max-width:1180px){
+  .changelog-toolbar{
+    grid-template-columns:minmax(260px,1fr) 1fr;
+  }
+  .hotfix-toggle,.collapse-actions{
+    align-self:end;
+  }
+}
+@media(max-width:760px){
+  .source-links{
+    justify-content:flex-start;
+  }
+  .source-links .source-button{
+    width:auto;
+  }
+  .filter-stack{
+    grid-column:1/-1;
+  }
+  .update-type-filters button{
+    flex:1 1 calc(50% - 7px);
+  }
+}

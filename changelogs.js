@@ -4,6 +4,7 @@ const state = {
   articles:[],
   query:"",
   edition:"all",
+  track:"all",
   hotfixOnly:false
 };
 
@@ -37,6 +38,7 @@ function normaliseSearch(value){
 function filteredArticles(){
   return state.articles.filter(article=>{
     if(state.edition !== "all" && article.edition !== state.edition) return false;
+    if(state.track !== "all" && article.track !== state.track) return false;
     if(state.hotfixOnly && !article.hotfix) return false;
     if(!state.query) return true;
     const haystack = normaliseSearch(`${article.title} ${article.summary} ${article.body}`);
@@ -68,17 +70,24 @@ function makeArticle(article,index){
   const details = document.createElement("details");
   details.className = "changelog-card";
   details.dataset.edition = article.edition;
+  details.dataset.track = article.track || "release";
   details.dataset.hotfix = String(Boolean(article.hotfix));
   details.id = `changelog-${article.id}`;
 
   const badge = article.edition === "java" ? "Java" :
     article.edition === "bedrock" ? "Bedrock" : "Minecraft";
+  const trackBadge = article.track === "beta_preview"
+    ? '<span class="track-badge beta-preview">Beta / Preview</span>'
+    : article.track === "snapshot"
+      ? '<span class="track-badge snapshot">Snapshot</span>'
+      : '<span class="track-badge release">Release</span>';
 
   details.innerHTML = `
     <summary>
       <div class="changelog-summary-main">
         <div class="changelog-badges">
           <span class="edition-badge ${escapeHtml(article.edition)}">${badge}</span>
+          ${trackBadge}
           ${article.hotfix ? '<span class="hotfix-badge">Hotfix</span>' : ""}
         </div>
         <h2>${escapeHtml(article.title)}</h2>
@@ -132,8 +141,14 @@ async function load(){
     byId("pageStatusDot").classList.add("live");
     byId("trackerStatus").textContent = "Connected";
     byId("statusSmall").textContent = "Minecraft Feedback";
+    const counts = data.counts || {};
+    const countText = [
+      counts.release != null ? `${counts.release} releases` : null,
+      counts.betaPreview != null ? `${counts.betaPreview} beta/preview` : null,
+      counts.snapshot ? `${counts.snapshot} snapshots` : null
+    ].filter(Boolean).join(" · ");
     byId("changelogMeta").textContent =
-      `Checked ${data.checkedAt ? new Date(data.checkedAt).toLocaleString("en-GB") : "recently"} · updates daily`;
+      `Checked ${data.checkedAt ? new Date(data.checkedAt).toLocaleString("en-GB") : "recently"}${countText ? ` · ${countText}` : ""}`;
     render();
   }catch(error){
     errorBox.textContent = error.message || "Unable to load changelogs.";
@@ -154,6 +169,14 @@ byId("editionFilters").addEventListener("click",event=>{
   if(!button) return;
   state.edition = button.dataset.edition;
   byId("editionFilters").querySelectorAll("button").forEach(item=>item.classList.toggle("active",item === button));
+  render();
+});
+
+byId("trackFilters").addEventListener("click",event=>{
+  const button = event.target.closest("[data-track]");
+  if(!button) return;
+  state.track = button.dataset.track;
+  byId("trackFilters").querySelectorAll("button").forEach(item=>item.classList.toggle("active",item === button));
   render();
 });
 
@@ -182,7 +205,7 @@ load();
 
 
 function classifyRenderedChangelogBadges(){
-  document.querySelectorAll(".edition-badge,.hotfix-badge").forEach(badge=>{
+  document.querySelectorAll(".edition-badge,.hotfix-badge,.track-badge").forEach(badge=>{
     const text=(badge.textContent||"").trim().toLowerCase();
     if(text.includes("bedrock")) badge.classList.add("bedrock");
     if(text.includes("java")) badge.classList.add("java");

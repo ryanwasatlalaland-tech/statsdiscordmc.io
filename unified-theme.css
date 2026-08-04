@@ -631,3 +631,68 @@ html[data-theme="light"] .changelog-page .hotfix-badge{
   background:#e98b19!important;
   color:#251200!important;
 }
+
+
+/* =========================================================
+   V10 PARCHMENT CHART FIX
+   The previous generic chart-wrap overlay was tinting map charts grey.
+   ========================================================= */
+.minecraft-page .map-panel .chart-wrap,
+.minecraft-page .map-panel .chart-container,
+.minecraft-page .map-panel .canvas-wrap{
+  background:#ead9ac!important;
+  border:2px solid rgba(68,49,26,.28)!important;
+  box-shadow:
+    inset 0 0 0 3px rgba(255,248,219,.24),
+    inset 0 -3px rgba(96,70,35,.08)!important;
+}
+
+.minecraft-page .map-panel canvas{
+  background:#ead9ac!important;
+  filter:none!important;
+}
+
+.minecraft-page .map-panel .metric-pill{
+  background:#3f782f!important;
+  border-color:#1d4217!important;
+  color:#ffffff!important;
+}
+
+.minecraft-page .map-panel .panel-head p{
+  color:#4d412f!important;
+  opacity:1!important;
+}
+
+.minecraft-page .map-panel .chart-wrap{
+  padding:8px!important;
+}
+
+/* Prevent the generic dark chart tint from affecting parchment */
+.minecraft-page .map-panel .chart-wrap::before,
+.minecraft-page .map-panel .chart-container::before,
+.minecraft-page .map-panel .canvas-wrap::before{
+  display:none!important;
+}
+
+html[data-theme="light"] .minecraft-page .map-panel .chart-wrap,
+html[data-theme="light"] .minecraft-page .map-panel canvas{
+  background:#f1e2b9!important;
+}
+
+
+/* V11 update-channel badges */
+.changelog-page .track-badge.beta-preview{
+  background:#347f99!important;
+  border-color:#1d4858!important;
+  color:#ffffff!important;
+}
+.changelog-page .track-badge.snapshot{
+  background:#8250a5!important;
+  border-color:#472a5d!important;
+  color:#ffffff!important;
+}
+.changelog-page .track-badge.release{
+  background:#8b7045!important;
+  border-color:#4c3c25!important;
+  color:#ffffff!important;
+}
