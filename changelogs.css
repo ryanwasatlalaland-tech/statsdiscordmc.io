@@ -99,12 +99,32 @@
   position:relative;max-width:100%;overflow:auto;padding:16px;border:1px solid var(--line);
   border-radius:13px;background:#0d1117;tab-size:2
 }
-.changelog-body code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
-.changelog-body :not(pre)>code{padding:2px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel-2)}
-.article-footer{
-  display:flex;justify-content:space-between;gap:15px;align-items:center;
-  margin-top:30px;padding-top:15px;border-top:1px solid var(--line);color:var(--muted);font-size:12px
+.changelog-body code{
+  font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+  color:#fff;
 }
+
+.changelog-body :not(pre)>code{
+  padding:3px 6px;
+  border:1px solid #555;
+  border-radius:5px;
+  background:#000;
+  color:#fff;
+  font-weight:600;
+}
+
+.article-footer{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  margin-top:30px;
+  padding-top:15px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:12px;
+}
+
 .article-footer a{color:var(--accent);font-weight:800}
 .empty-state{text-align:center;padding:50px;color:var(--muted)}
 .changelog-skeleton{height:145px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(90deg,var(--panel),var(--panel-2),var(--panel));background-size:200% 100%;animation:loading 1.4s infinite}
