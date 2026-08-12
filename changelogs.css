@@ -130,7 +130,16 @@
 .changelog-skeleton{height:145px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(90deg,var(--panel),var(--panel-2),var(--panel));background-size:200% 100%;animation:loading 1.4s infinite}
 @keyframes loading{to{background-position:-200% 0}}
 html[data-theme="light"] .changelog-toolbar{box-shadow:0 12px 30px rgba(35,74,120,.10)}
-html[data-theme="light"] .changelog-body pre{background:#f6f8fa;color:#24292f}
+html[data-theme="light"] .changelog-body pre{
+  background:#000 !important;
+  color:#fff !important;
+  border:2px solid #555;
+}
+html[data-theme="light"] .changelog-body pre code{
+  background:transparent !important;
+  color:#fff !important;
+}
+
 @media(max-width:1050px){
   .changelog-toolbar{grid-template-columns:1fr auto auto}
   .collapse-actions{grid-column:1/-1}
