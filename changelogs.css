@@ -135,11 +135,11 @@ html[data-theme="light"] .changelog-body pre{
   color:#fff !important;
   border:2px solid #555;
 }
-html[data-theme="dark"] .changelog-body pre code{
+html[data-theme="light"] .changelog-body pre code{
   background:transparent !important;
   color:#fff !important;
 }
-html[data-theme="light"] .changelog-body pre{
+html[data-theme="dark"] .changelog-body pre{
   background:#000 !important;
   color:#fff !important;
   border:2px solid #555;
