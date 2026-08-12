@@ -1,6 +1,7 @@
 # statsdiscordmc
 
 # NEW ADDITIONS 
+Minecraft Changelogs are now also pulled 
 Dashboard now has a top 10 server list to track growth or decline
 
 
